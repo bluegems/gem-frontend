@@ -1,3 +1,4 @@
+import React, { useRef } from 'react';
 import { Button, TextField, Grid, Link } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { gql, useMutation } from '@apollo/client';
@@ -32,11 +33,12 @@ const REGISTER = gql`
 function RegisterForm() {
   const classes = useStyles();
 
-  let firstName;
-  let lastName;
-  let username;
-  let email;
-  let password;
+  const firstName = useRef('');
+  const lastName = useRef('');
+  const username = useRef('');
+  const email = useRef('');
+  const password = useRef('');
+
   const [register, { data, loading, error }] = useMutation(REGISTER);
 
   return (
@@ -60,7 +62,7 @@ function RegisterForm() {
         <Grid container spacing={1}>
           <Grid item xs={12} sm={6}>
             <TextField
-              inputRef={(node) => (firstName = node)}
+              inputRef={firstName}
               autoComplete="fname"
               name="firstName"
               margin="normal"
@@ -73,7 +75,7 @@ function RegisterForm() {
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
-              inputRef={(node) => (lastName = node)}
+              inputRef={lastName}
               variant="outlined"
               margin="normal"
               id="lastName"
@@ -83,7 +85,7 @@ function RegisterForm() {
           </Grid>
           <Grid item xs={12}>
             <TextField
-              inputRef={(node) => (username = node)}
+              inputRef={username}
               variant="outlined"
               margin="normal"
               id="username"
@@ -95,7 +97,7 @@ function RegisterForm() {
           </Grid>
           <Grid item xs={12}>
             <TextField
-              inputRef={(node) => (email = node)}
+              inputRef={email}
               variant="outlined"
               margin="normal"
               type="email"
@@ -108,7 +110,7 @@ function RegisterForm() {
           </Grid>
           <Grid item xs={12}>
             <TextField
-              inputRef={(node) => (password = node)}
+              inputRef={password}
               variant="outlined"
               margin="normal"
               type="password"

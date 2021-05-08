@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Avatar,
   Card,
@@ -9,10 +10,7 @@ import {
   makeStyles,
   Typography,
 } from '@material-ui/core';
-import {
-  FavoriteBorderOutlined,
-  InsertCommentOutlined,
-} from '@material-ui/icons';
+import { FavoriteBorderOutlined, InsertCommentOutlined } from '@material-ui/icons';
 import { dateToString } from '../../utils/CommonUtils';
 
 const useStyles = makeStyles((theme) => ({
@@ -36,32 +34,20 @@ function Post(props) {
   const classes = useStyles();
 
   const {
-    userFirstName,
-    username,
-    profilePicture,
-    image,
-    description,
-    date,
-  } = props.post;
+    post: { userFirstName, username, profilePicture, image, description, date },
+  } = props;
+
   const imageExists = image && image !== null && image.length !== 0;
-  const descriptionExists =
-    description && description !== null && description.length !== 0;
+  const descriptionExists = description && description !== null && description.length !== 0;
+
   return imageExists || descriptionExists ? (
     <Card className={classes.Post}>
       <CardHeader
-        avatar={
-          <Avatar
-            alt={userFirstName}
-            src={profilePicture}
-            className={classes.UserAvatar}
-          />
-        }
+        avatar={<Avatar alt={userFirstName} src={profilePicture} className={classes.UserAvatar} />}
         title={userFirstName}
         subheader={`@${username}`}
       />
-      {imageExists ? (
-        <CardMedia component="img" image={image} title="Image sample" />
-      ) : null}
+      {imageExists ? <CardMedia component="img" image={image} title="Image sample" /> : null}
       {descriptionExists ? (
         <CardContent>
           <Typography variant="body2" component="h3">

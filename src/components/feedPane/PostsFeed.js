@@ -1,3 +1,4 @@
+import React from 'react';
 import { makeStyles, Paper } from '@material-ui/core';
 import Post from './Post';
 
@@ -46,8 +47,7 @@ function PostsFeed() {
     {
       userFirstName: 'Parinith',
       username: 'parinithshekar',
-      profilePicture:
-        'https://i.pinimg.com/564x/5a/5f/47/5a5f473c8020387ec2ddad40f0cfea3f.jpg',
+      profilePicture: 'https://i.pinimg.com/564x/5a/5f/47/5a5f473c8020387ec2ddad40f0cfea3f.jpg',
       description: 'Antarctica seems pretty NICE!',
       image:
         'https://images.unsplash.com/photo-1556918936-216daf8e7c4c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
@@ -59,7 +59,7 @@ function PostsFeed() {
     <Paper variant="outlined" square>
       <div className={classes.postsFeed}>
         {posts.map((post) => (
-          <Post post={post} />
+          <Post key={post.username} post={post} />
         ))}
       </div>
     </Paper>

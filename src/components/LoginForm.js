@@ -1,7 +1,15 @@
+// React
+import React, { useRef } from 'react';
+import { useHistory } from 'react-router-dom';
+// 3rd party
 import { Button, TextField, Grid, Link } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { gql, useMutation } from '@apollo/client';
-import { useHistory } from 'react-router';
+import Cookies from 'universal-cookie';
+// Custom
+import { GEM_AUTHORIZATION_TOKEN_COOKIE } from '../utils/Constants';
+
+const cookies = new Cookies();
 
 const useStyles = makeStyles({
   submit: {
@@ -15,26 +23,32 @@ const LOGIN = gql`
   }
 `;
 
+const setCookie = function setCookie(token) {
+  cookies.set(GEM_AUTHORIZATION_TOKEN_COOKIE, token, { path: '/', sameSite: 'strict' });
+};
+
 function LoginForm() {
   const classes = useStyles();
-  const history = useHistory();
 
-  let email;
-  let password;
-  const [login, { data, error }] = useMutation(LOGIN);
+  const history = useHistory();
+  const email = useRef('');
+  const password = useRef('');
+
+  const [login, { error }] = useMutation(LOGIN, {
+    onCompleted: (data) => setCookie(data.login),
+  });
 
   return (
     <form
-      noValidate
       onSubmit={async (event) => {
         event.preventDefault();
+
         await login({
           variables: {
-            email: email.value,
-            password: password.value,
+            email: email.current?.value,
+            password: password.current?.value,
           },
         });
-        console.log(data);
         if (!error) {
           history.push('/feed');
         }
@@ -43,7 +57,7 @@ function LoginForm() {
       <Grid container spacing={1}>
         <Grid item xs={12}>
           <TextField
-            inputRef={(node) => (email = node)}
+            inputRef={email}
             variant="outlined"
             margin="normal"
             type="email"
@@ -57,7 +71,7 @@ function LoginForm() {
         </Grid>
         <Grid item xs={12}>
           <TextField
-            inputRef={(node) => (password = node)}
+            inputRef={password}
             variant="outlined"
             margin="normal"
             type="password"
@@ -81,7 +95,7 @@ function LoginForm() {
       <Grid container>
         <Grid item>
           <Link href="/register" variant="body2">
-            Don't have an account? Sign up!
+            Don&apos;t have an account? Sign up!
           </Link>
         </Grid>
       </Grid>

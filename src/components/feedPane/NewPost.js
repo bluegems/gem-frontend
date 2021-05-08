@@ -1,11 +1,5 @@
-import {
-  Button,
-  Grid,
-  IconButton,
-  makeStyles,
-  Paper,
-  TextField,
-} from '@material-ui/core';
+import React from 'react';
+import { Button, Grid, IconButton, makeStyles, Paper, TextField } from '@material-ui/core';
 import { ImageOutlined } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
@@ -29,26 +23,17 @@ const useStyles = makeStyles((theme) => ({
 
 function NewPost() {
   const classes = useStyles();
+
   return (
     <Paper variant="outlined" square className={classes.NewPostContainer}>
       <Paper className={classes.NewPost}>
         <form>
           <Grid container spacing={1}>
             <Grid item xs={10} className={classes.gridItem}>
-              <TextField
-                id="description"
-                label="Description"
-                variant="outlined"
-                fullWidth
-              />
+              <TextField id="description" label="Description" variant="outlined" fullWidth />
             </Grid>
             <Grid item xs={2} className={classes.gridItem}>
-              <input
-                accept="image/*"
-                className={classes.input}
-                id="icon-button-file"
-                type="file"
-              />
+              <input accept="image/*" className={classes.input} id="icon-button-file" type="file" />
               <label htmlFor="icon-button-file">
                 <IconButton
                   color="primary"

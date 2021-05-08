@@ -27,11 +27,9 @@ function monthIndexToString(monthIndex) {
   }
 }
 
-export default function dateToString(date) {
+export function dateToString(date) {
   return `${date.toLocaleTimeString(navigator.language, {
     hour: '2-digit',
     minute: '2-digit',
-  })} ${date.getDate()} ${monthIndexToString(
-    date.getMonth()
-  )} ${date.getFullYear()}`;
+  })} ${date.getDate()} ${monthIndexToString(date.getMonth())} ${date.getFullYear()}`;
 }

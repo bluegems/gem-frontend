@@ -1,16 +1,34 @@
+// React
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import { ApolloClient, InMemoryCache } from '@apollo/client';
+// 3rd party library
+import { ApolloClient, InMemoryCache, HttpLink, ApolloLink, concat } from '@apollo/client';
 import { ApolloProvider } from '@apollo/client/react';
+import Cookies from 'universal-cookie';
+// Custom
+import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { GEM_AUTHORIZATION_TOKEN_COOKIE, GEM_GRAPHQL_URI } from './utils/Constants';
 
-const BACKEND_GRAPHQL_URI = 'http://localhost:8080/graphql';
+const cookies = new Cookies();
 
+// Apollo
+const httpLink = new HttpLink({ uri: GEM_GRAPHQL_URI });
+const authorizationMiddleware = new ApolloLink((operation, forward) => {
+  const token = cookies.get(GEM_AUTHORIZATION_TOKEN_COOKIE);
+  if (token) {
+    operation.setContext({
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    });
+  }
+  return forward(operation);
+});
 const client = new ApolloClient({
-  uri: BACKEND_GRAPHQL_URI,
   cache: new InMemoryCache(),
+  link: concat(authorizationMiddleware, httpLink),
 });
 
 ReactDOM.render(

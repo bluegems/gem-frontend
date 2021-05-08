@@ -1,10 +1,5 @@
-import {
-  Avatar,
-  Badge,
-  makeStyles,
-  Typography,
-  withStyles,
-} from '@material-ui/core';
+import React from 'react';
+import { Avatar, Badge, makeStyles, Typography, withStyles } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
   FriendStatus: {
@@ -36,7 +31,9 @@ const StyledBadge = withStyles((theme) => ({
 function FriendStatus(props) {
   const classes = useStyles();
 
-  const { userFirstName, userLastName, profilePicture, online } = props.friend;
+  const {
+    friend: { userFirstName, userLastName, profilePicture, online },
+  } = props;
 
   return (
     <div className={classes.FriendStatus}>
@@ -54,10 +51,7 @@ function FriendStatus(props) {
       ) : (
         <Avatar alt={userFirstName} src={profilePicture} />
       )}
-      <Typography
-        variant="h7"
-        className={classes.UserName}
-      >{`${userFirstName} ${userLastName}`}</Typography>
+      <Typography className={classes.UserName}>{`${userFirstName} ${userLastName}`}</Typography>
     </div>
   );
 }

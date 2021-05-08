@@ -1,4 +1,6 @@
+import React, { useContext } from 'react';
 import { Avatar, makeStyles, Typography } from '@material-ui/core';
+import AuthenticatedUserContext from '../../contexts/AuthenticatedUserContext';
 
 const useStyles = makeStyles((theme) => ({
   UserInfo: {
@@ -25,30 +27,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function LeftPane(props) {
+function LeftPane() {
   const classes = useStyles();
 
-  const {
-    userFirstName,
-    userLastName,
-    username,
-    tag,
-    profilePicture,
-    bio,
-  } = props.user;
+  const { username, tag, firstName, lastName, bio, profilePicture } = useContext(
+    AuthenticatedUserContext
+  );
 
   return (
     <div className={classes.UserInfo}>
       <div className={classes.UserInfoNested}>
         <div>
-          <Avatar
-            alt={userFirstName}
-            src={profilePicture}
-            className={classes.UserAvatar}
-          />
+          <Avatar alt={firstName} src={profilePicture} className={classes.UserAvatar} />
         </div>
         <div className={classes.UserDetails}>
-          <Typography variant="h6">{`${userFirstName} ${userLastName}`}</Typography>
+          <Typography variant="h6">{`${firstName} ${lastName}`}</Typography>
           <Typography variant="body2">{`@${username}#${tag}`}</Typography>
         </div>
       </div>

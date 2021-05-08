@@ -1,24 +1,18 @@
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import BlueGemsLogo from '../bluegem.svg';
 
-const useStyles = makeStyles({
-  image: (props) => ({
-    width: props.width,
-    height: props.height,
-  }),
-});
+const useStyles = makeStyles((theme) => ({
+  image: {
+    width: theme.spacing(8),
+    height: theme.spacing(8),
+  },
+}));
 
-function Logo(props) {
-  const classes = useStyles(props);
+function Logo() {
+  const classes = useStyles();
 
-  return (
-    <img
-      className={classes.image}
-      src={BlueGemsLogo}
-      alt="Bluegems icon"
-      variant="square"
-    />
-  );
+  return <img className={classes.image} src={BlueGemsLogo} alt="Bluegems icon" variant="square" />;
 }
 
 export default Logo;

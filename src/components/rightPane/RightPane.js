@@ -1,3 +1,4 @@
+import React from 'react';
 import { makeStyles } from '@material-ui/core';
 import FriendStatus from './FriendStatus';
 
@@ -56,7 +57,7 @@ function RightPane() {
   return (
     <div className={classes.FriendsListRoot}>
       {friends.map((friend) => (
-        <FriendStatus friend={friend} />
+        <FriendStatus key={friend.username} friend={friend} />
       ))}
     </div>
   );
