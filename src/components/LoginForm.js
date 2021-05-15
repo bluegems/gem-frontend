@@ -4,9 +4,10 @@ import { useHistory } from 'react-router-dom';
 // 3rd party
 import { Button, TextField, Grid, Link } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { gql, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import Cookies from 'universal-cookie';
 // Custom
+import { LOGIN } from '../utils/GraphQLRequests';
 import { GEM_AUTHORIZATION_TOKEN_COOKIE } from '../utils/Constants';
 
 const cookies = new Cookies();
@@ -16,12 +17,6 @@ const useStyles = makeStyles({
     margin: '1rem 0 1rem 0',
   },
 });
-
-const LOGIN = gql`
-  mutation Login($email: String!, $password: String!) {
-    login(email: $email, password: $password)
-  }
-`;
 
 const setCookie = function setCookie(token) {
   cookies.set(GEM_AUTHORIZATION_TOKEN_COOKIE, token, { path: '/', sameSite: 'strict' });

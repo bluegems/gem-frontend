@@ -25,7 +25,6 @@ function Register() {
 
   return (
     <Container maxWidth="xs">
-      <CssBaseline />
       <div className={classes.paper}>
         <Logo width="8rem" />
         <Typography className={classes.typography} variant="h3" component="h3">

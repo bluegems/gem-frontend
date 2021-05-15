@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Container, Grid } from '@material-ui/core';
-import { gql, useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 
 import AuthenticatedUserContext from '../contexts/AuthenticatedUserContext';
 import LeftPane from '../components/leftPane/LeftPane';
@@ -9,20 +9,7 @@ import NewPost from '../components/feedPane/NewPost';
 import PostsFeed from '../components/feedPane/PostsFeed';
 import RightPane from '../components/rightPane/RightPane';
 import GemHeader from '../components/GemHeader';
-
-const GET_CURRENT_USER = gql`
-  query GetCurrentUser {
-    getCurrentUser {
-      username
-      tag
-      firstName
-      lastName
-      bio
-      birthdate
-      profilePicture
-    }
-  }
-`;
+import { GET_CURRENT_USER } from '../utils/GraphQLRequests';
 
 function Feed() {
   const { data, loading, error } = useQuery(GET_CURRENT_USER);
@@ -33,23 +20,21 @@ function Feed() {
   const { getCurrentUser: currentUser } = data;
   return (
     <AuthenticatedUserContext.Provider value={currentUser}>
-      <div>
-        <GemHeader />
-        <Container maxWidth="lg">
-          <Grid container>
-            <Grid item lg={3}>
-              <LeftPane />
-            </Grid>
-            <Grid item lg={6}>
-              <NewPost />
-              <PostsFeed />
-            </Grid>
-            <Grid item lg={3}>
-              <RightPane />
-            </Grid>
+      <GemHeader />
+      <Container maxWidth="lg">
+        <Grid container>
+          <Grid item lg={3}>
+            <LeftPane />
           </Grid>
-        </Container>
-      </div>
+          <Grid item lg={6}>
+            <NewPost />
+            <PostsFeed />
+          </Grid>
+          <Grid item lg={3}>
+            <RightPane />
+          </Grid>
+        </Grid>
+      </Container>
     </AuthenticatedUserContext.Provider>
   );
 }

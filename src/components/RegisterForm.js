@@ -1,7 +1,9 @@
-import React, { useRef } from 'react';
+import React, { useState } from 'react';
 import { Button, TextField, Grid, Link } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { gql, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
+
+import { REGISTER } from '../utils/GraphQLRequests';
 
 const useStyles = makeStyles({
   submit: {
@@ -9,37 +11,18 @@ const useStyles = makeStyles({
   },
 });
 
-const REGISTER = gql`
-  mutation Register(
-    $email: String!
-    $password: String!
-    $username: String!
-    $firstName: String!
-    $lastName: String
-  ) {
-    register(
-      email: $email
-      password: $password
-      username: $username
-      firstName: $firstName
-      lastName: $lastName
-    ) {
-      username
-      tag
-    }
-  }
-`;
-
+// TODO: Toast on error
 function RegisterForm() {
   const classes = useStyles();
 
-  const firstName = useRef('');
-  const lastName = useRef('');
-  const username = useRef('');
-  const email = useRef('');
-  const password = useRef('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  const [register, { data, loading, error }] = useMutation(REGISTER);
+  // TODO: Redirect to login or just log the user in
+  const [register, { loading, error }] = useMutation(REGISTER);
 
   return (
     <div>
@@ -47,23 +30,23 @@ function RegisterForm() {
         noValidate
         onSubmit={async (event) => {
           event.preventDefault();
-          register({
+          console.log(email.value);
+          await register({
             variables: {
-              email: email.value,
-              password: password.value,
-              firstName: firstName.value,
-              lastName: lastName.value,
-              username: username.value,
+              email,
+              password,
+              firstName,
+              lastName,
+              username,
             },
           });
-          console.log(data);
         }}
       >
         <Grid container spacing={1}>
           <Grid item xs={12} sm={6}>
             <TextField
-              inputRef={firstName}
-              autoComplete="fname"
+              value={firstName}
+              onChange={(event) => setFirstName(event.target.value)}
               name="firstName"
               margin="normal"
               variant="outlined"
@@ -75,7 +58,8 @@ function RegisterForm() {
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
-              inputRef={lastName}
+              value={lastName}
+              onChange={(event) => setLastName(event.target.value)}
               variant="outlined"
               margin="normal"
               id="lastName"
@@ -85,7 +69,8 @@ function RegisterForm() {
           </Grid>
           <Grid item xs={12}>
             <TextField
-              inputRef={username}
+              value={username}
+              onChange={(event) => setUsername(event.target.value)}
               variant="outlined"
               margin="normal"
               id="username"
@@ -97,7 +82,8 @@ function RegisterForm() {
           </Grid>
           <Grid item xs={12}>
             <TextField
-              inputRef={email}
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
               variant="outlined"
               margin="normal"
               type="email"
@@ -110,7 +96,8 @@ function RegisterForm() {
           </Grid>
           <Grid item xs={12}>
             <TextField
-              inputRef={password}
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
               variant="outlined"
               margin="normal"
               type="password"
