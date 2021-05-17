@@ -32,8 +32,17 @@ function FriendStatus(props) {
   const classes = useStyles();
 
   const {
-    friend: { userFirstName, userLastName, profilePicture, online },
+    friend: {
+      firstName: userFirstName,
+      lastName: userLastName,
+      profilePicture
+    }
   } = props;
+  const online = true;
+
+  // const {
+  //   friend: { userFirstName, userLastName, profilePicture, online },
+  // } = props;
 
   return (
     <div className={classes.FriendStatus}>

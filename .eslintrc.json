@@ -6,6 +6,7 @@
   },
   "rules": {
     "no-undef": "off",
+    "no-extra-boolean-cast": "off",
     "react/jsx-filename-extension": ["warn", { "extensions": [".js", "jsx"] }],
     "import/prefer-default-export": "off",
     "react/prop-types": "off",
@@ -36,9 +37,9 @@
         }
       }
     ],
+    "react/jsx-props-no-spreading": "off",
 
     "no-return-assign": "warn",
-    "react/jsx-props-no-spreading": "warn",
     "no-param-reassign": "warn",
     "no-unused-vars": "warn"
   }

@@ -9,6 +9,7 @@ import Cookies from 'universal-cookie';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+
 import { GEM_AUTHORIZATION_TOKEN_COOKIE, GEM_GRAPHQL_URI } from './utils/Constants';
 
 const cookies = new Cookies();
@@ -31,10 +32,11 @@ const client = new ApolloClient({
   link: concat(authorizationMiddleware, httpLink),
 });
 
+
 ReactDOM.render(
   <ApolloProvider client={client}>
     <React.StrictMode>
-      <App />
+        <App />
     </React.StrictMode>
   </ApolloProvider>,
   document.getElementById('root')

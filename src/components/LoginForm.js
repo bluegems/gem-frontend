@@ -1,6 +1,6 @@
 // React
-import React, { useRef } from 'react';
-import { useHistory } from 'react-router-dom';
+import React from 'react';
+import { useLocation, useHistory } from 'react-router-dom';
 // 3rd party
 import { Button, TextField, Grid, Link } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -8,6 +8,7 @@ import { useMutation } from '@apollo/client';
 import Cookies from 'universal-cookie';
 // Custom
 import { LOGIN } from '../utils/GraphQLRequests';
+import AuthenticatedUserContext from "../contexts/AuthenticatedUserContext";
 import { GEM_AUTHORIZATION_TOKEN_COOKIE } from '../utils/Constants';
 
 const cookies = new Cookies();
@@ -24,35 +25,37 @@ const setCookie = function setCookie(token) {
 
 function LoginForm() {
   const classes = useStyles();
-
   const history = useHistory();
-  const email = useRef('');
-  const password = useRef('');
 
-  const [login, { error }] = useMutation(LOGIN, {
-    onCompleted: (data) => setCookie(data.login),
-  });
+  const { state } = useLocation();
+
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+
+  const [login, { data, error }] = useMutation(LOGIN);
+
+  React.useEffect(() => {
+    if (!data) return;
+    setCookie(data.login);
+    history.replace(state?.from || '/feed');
+  }, [data, error]);
 
   return (
     <form
       onSubmit={async (event) => {
         event.preventDefault();
-
         await login({
           variables: {
-            email: email.current?.value,
-            password: password.current?.value,
+            email,
+            password,
           },
         });
-        if (!error) {
-          history.push('/feed');
-        }
       }}
     >
       <Grid container spacing={1}>
         <Grid item xs={12}>
           <TextField
-            inputRef={email}
+            onChange={(event) => setEmail(event.target.value)}
             variant="outlined"
             margin="normal"
             type="email"
@@ -66,7 +69,7 @@ function LoginForm() {
         </Grid>
         <Grid item xs={12}>
           <TextField
-            inputRef={password}
+            onChange={(event) => setPassword(event.target.value)}
             variant="outlined"
             margin="normal"
             type="password"

@@ -1,41 +1,49 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { Container, Grid } from '@material-ui/core';
 import { useQuery } from '@apollo/client';
 
 import AuthenticatedUserContext from '../contexts/AuthenticatedUserContext';
-import LeftPane from '../components/leftPane/LeftPane';
-import NewPost from '../components/feedPane/NewPost';
-import PostsFeed from '../components/feedPane/PostsFeed';
-import RightPane from '../components/rightPane/RightPane';
+import LeftPane from '../components/currentUser/CurrentUserPane';
+import NewPost from '../components/posts/NewPost';
+import PostsFeed from '../components/posts/PostsFeed';
+import FriendsPane from '../components/friends/FriendsPane';
 import GemHeader from '../components/GemHeader';
-import { GET_CURRENT_USER } from '../utils/GraphQLRequests';
+import { GET_CURRENT_USER_AND_FRIENDS_POSTS } from '../utils/GraphQLRequests';
 
 function Feed() {
-  const { data, loading, error } = useQuery(GET_CURRENT_USER);
+  const { authenticatedUserInfo, setAuthenticatedUserInfo } = React.useContext(
+    AuthenticatedUserContext
+  );
+  const [friendsPosts, setFriendsPosts] = React.useState(null);
+  const { data } = useQuery(GET_CURRENT_USER_AND_FRIENDS_POSTS);
 
-  if (loading) return null;
-  if (error) return <p>Faced error</p>;
+  useEffect(() => {
+    if (!data) return;
+    setAuthenticatedUserInfo(data.getCurrentUser);
+    setFriendsPosts(data.getFriendsPosts);
+  }, [data]);
 
-  const { getCurrentUser: currentUser } = data;
   return (
-    <AuthenticatedUserContext.Provider value={currentUser}>
-      <GemHeader />
-      <Container maxWidth="lg">
-        <Grid container>
-          <Grid item lg={3}>
-            <LeftPane />
+    !!authenticatedUserInfo && (
+      <>
+        <GemHeader setAuthenticatedUserInfo={setAuthenticatedUserInfo} />
+        <Container maxWidth="lg">
+          <Grid container>
+            <Grid item lg={3}>
+              <LeftPane />
+            </Grid>
+            <Grid item lg={6}>
+              <NewPost />
+              {!!friendsPosts && <PostsFeed posts={friendsPosts} />}
+            </Grid>
+            <Grid item lg={3}>
+              <FriendsPane friends={authenticatedUserInfo.friends} />
+            </Grid>
           </Grid>
-          <Grid item lg={6}>
-            <NewPost />
-            <PostsFeed />
-          </Grid>
-          <Grid item lg={3}>
-            <RightPane />
-          </Grid>
-        </Grid>
-      </Container>
-    </AuthenticatedUserContext.Provider>
+        </Container>
+      </>
+    )
   );
 }
 

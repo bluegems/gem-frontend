@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import {
   Avatar,
   Card,
@@ -34,20 +35,34 @@ function Post(props) {
   const classes = useStyles();
 
   const {
-    post: { userFirstName, username, profilePicture, image, description, date },
+    post: {
+      description,
+      image,
+      modifiedDatetime,
+      user: { username, tag, firstName: userFirstName, lastName: userLastName, profilePicture },
+    },
   } = props;
+  const date = new Date(Date.parse(modifiedDatetime));
 
   const imageExists = image && image !== null && image.length !== 0;
   const descriptionExists = description && description !== null && description.length !== 0;
 
   return imageExists || descriptionExists ? (
     <Card className={classes.Post}>
-      <CardHeader
-        avatar={<Avatar alt={userFirstName} src={profilePicture} className={classes.UserAvatar} />}
-        title={userFirstName}
-        subheader={`@${username}`}
-      />
-      {imageExists ? <CardMedia component="img" image={image} title="Image sample" /> : null}
+      <Link to={{ pathname: `/profile/${username}/${tag}` }}>
+        <CardHeader
+          avatar={
+            <Avatar
+              alt={userFirstName}
+              src={String(profilePicture)}
+              className={classes.UserAvatar}
+            />
+          }
+          title={`${userFirstName} ${userLastName}`}
+          subheader={`@${username}#${tag}`}
+        />
+      </Link>
+      {imageExists ? <CardMedia component="img" image={image} /> : null}
       {descriptionExists ? (
         <CardContent>
           <Typography variant="body2" component="h3">
