@@ -1,8 +1,7 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core';
 import FriendStatus from './FriendStatus';
-import AuthenticatedUserContext from '../../contexts/AuthenticatedUserContext';
 
 const useStyles = makeStyles((theme) => ({
   FriendsListRoot: {

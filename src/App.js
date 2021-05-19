@@ -10,6 +10,7 @@ import Feed from './pages/Feed';
 import { isAuthenticated } from './utils/AuthUtils';
 import Profile from './pages/Profile';
 import AuthenticatedUserContext from './contexts/AuthenticatedUserContext';
+import PostPage from './pages/PostPage';
 
 function App() {
   const [authenticatedUserInfo, setAuthenticatedUserInfo] = React.useState(null);
@@ -36,6 +37,9 @@ function App() {
             </AuthenticatedRoute>
             <AuthenticatedRoute exact path="/profile/:username/:tag">
               <Profile />
+            </AuthenticatedRoute>
+            <AuthenticatedRoute exact path="/post/:id">
+              <PostPage />
             </AuthenticatedRoute>
           </Switch>
         </AuthenticatedUserContext.Provider>

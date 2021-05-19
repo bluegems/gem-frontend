@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Typography, CssBaseline } from '@material-ui/core';
+import { Container, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Logo from '../components/Logo';
 import RegisterForm from '../components/RegisterForm';

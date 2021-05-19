@@ -3,19 +3,17 @@ import { Link } from 'react-router-dom';
 import {
   Avatar,
   Card,
-  CardActions,
   CardContent,
   CardHeader,
   CardMedia,
-  IconButton,
   makeStyles,
   Typography,
 } from '@material-ui/core';
-import { FavoriteBorderOutlined, InsertCommentOutlined } from '@material-ui/icons';
 import { dateToString } from '../../utils/CommonUtils';
 
 const useStyles = makeStyles((theme) => ({
   Post: {
+    width: `calc(100% - ${theme.spacing(4)}px)`,
     margin: theme.spacing(2),
     position: 'relative',
   },
@@ -36,6 +34,7 @@ function Post(props) {
 
   const {
     post: {
+      id: postId,
       description,
       image,
       modifiedDatetime,
@@ -44,10 +43,7 @@ function Post(props) {
   } = props;
   const date = new Date(Date.parse(modifiedDatetime));
 
-  const imageExists = image && image !== null && image.length !== 0;
-  const descriptionExists = description && description !== null && description.length !== 0;
-
-  return imageExists || descriptionExists ? (
+  return !!image || !!description ? (
     <Card className={classes.Post}>
       <Link to={{ pathname: `/profile/${username}/${tag}` }}>
         <CardHeader
@@ -62,22 +58,16 @@ function Post(props) {
           subheader={`@${username}#${tag}`}
         />
       </Link>
-      {imageExists ? <CardMedia component="img" image={image} /> : null}
-      {descriptionExists ? (
-        <CardContent>
-          <Typography variant="body2" component="h3">
-            {description}
-          </Typography>
-        </CardContent>
-      ) : null}
-      <CardActions>
-        <IconButton>
-          <FavoriteBorderOutlined />
-        </IconButton>
-        <IconButton>
-          <InsertCommentOutlined />
-        </IconButton>
-      </CardActions>
+      <Link to={{ pathname: `/post/${postId}` }}>
+        {!!description ? (
+          <CardContent>
+            <Typography variant="body2" component="h3">
+              {description}
+            </Typography>
+          </CardContent>
+        ) : null}
+        {!!image ? <CardMedia component="img" image={image} /> : null}
+      </Link>
       <Typography variant="overline" className={classes.Date}>
         {dateToString(date)}
       </Typography>

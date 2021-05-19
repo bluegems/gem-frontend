@@ -8,12 +8,13 @@ import Logo from './Logo';
 
 import AuthenticatedUserContext from '../contexts/AuthenticatedUserContext';
 import { GEM_AUTHORIZATION_TOKEN_COOKIE } from '../utils/Constants';
+import { GEM_HEADER_HEIGHT } from '../utils/CssConstants';
 
 const cookies = new Cookies();
 
 const useStyles = makeStyles((theme) => ({
   navbar: {
-    height: theme.spacing(8),
+    height: theme.spacing(GEM_HEADER_HEIGHT),
     width: '100%',
     position: 'sticky',
     top: 0,

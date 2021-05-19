@@ -257,3 +257,31 @@ export const UNFRIEND_USER = gql`
     }
   }
 `;
+
+export const GET_POST = gql`
+  query GetPost($id: Int!) {
+    getPost(id: $id) {
+      description
+      image
+      modifiedDatetime
+      user {
+        username
+        tag
+        firstName
+        lastName
+        profilePicture
+      }
+      comments {
+        id
+        text
+        user {
+          username
+          tag
+          firstName
+          lastName
+          profilePicture
+        }
+      }
+    }
+  }
+`;

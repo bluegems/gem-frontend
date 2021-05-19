@@ -1,10 +1,8 @@
 import React from 'react';
 
 import { makeStyles, Paper } from '@material-ui/core';
-import { useQuery } from '@apollo/client';
 
 import Post from './Post';
-import { GET_FRIENDS_POSTS } from '../../utils/GraphQLRequests';
 
 const useStyles = makeStyles((theme) => ({
   postsFeed: {

@@ -8,7 +8,6 @@ import { useMutation } from '@apollo/client';
 import Cookies from 'universal-cookie';
 // Custom
 import { LOGIN } from '../utils/GraphQLRequests';
-import AuthenticatedUserContext from "../contexts/AuthenticatedUserContext";
 import { GEM_AUTHORIZATION_TOKEN_COOKIE } from '../utils/Constants';
 
 const cookies = new Cookies();
