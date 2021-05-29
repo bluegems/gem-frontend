@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function PostsFeed({ posts }) {
+function PostsFeed({ posts, linkProfile, linkPost }) {
   const classes = useStyles();
 
   return !!posts ? (
@@ -22,7 +22,13 @@ function PostsFeed({ posts }) {
       {!!posts.length ? (
         <div className={classes.postsFeed}>
           {posts.map((post) => (
-            <Post key={post.id} post={post} showActions />
+            <Post
+              key={post.id}
+              post={post}
+              showActions
+              linkProfile={!!linkProfile}
+              linkPost={!!linkPost}
+            />
           ))}
         </div>
       ) : (

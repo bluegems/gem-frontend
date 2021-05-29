@@ -48,7 +48,7 @@ function Profile() {
           <ProfileInformation {...userInformation} refetch={refetch} />
           <Grid container spacing={3}>
             <Grid item lg={9}>
-              {!!posts && <PostsFeed posts={userInformation.posts} />}
+              {!!posts && <PostsFeed posts={userInformation.posts} linkPost />}
             </Grid>
             <Grid item lg={3}>
               {!!friends && <FriendsPane friends={userInformation.friends} />}

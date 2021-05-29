@@ -40,7 +40,7 @@ function Feed() {
             </Grid>
             <Grid item lg={6}>
               <NewPost />
-              {!!friendsPosts && <PostsFeed posts={friendsPosts} />}
+              {!!friendsPosts && <PostsFeed posts={friendsPosts} linkPost linkProfile />}
             </Grid>
             <Grid item lg={3}>
               <FriendsPane friends={authenticatedUserInfo.friends} />

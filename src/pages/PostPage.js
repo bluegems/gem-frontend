@@ -74,7 +74,7 @@ function PostPage() {
           <Paper className={classes.PostPaper}>
             <div className={classes.PostDivContainer}>
               <div className={classes.PostItem}>
-                <Post post={post} />
+                <Post post={post} linkProfile />
               </div>
               <div className={classes.PostActionsPane}>
                 <PostActionsPane

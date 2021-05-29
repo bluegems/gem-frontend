@@ -15,6 +15,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { dateToString } from '../../utils/CommonUtils';
 import { LIKE_POST, UNLIKE_POST } from '../../utils/GraphQLRequests';
+import { ConditionalLink } from '../../utils/LinkUtils';
 
 const useStyles = makeStyles((theme) => ({
   Post: {
@@ -47,7 +48,8 @@ function Post(props) {
       user: { username, tag, firstName: userFirstName, lastName: userLastName, profilePicture },
     },
     showActions,
-    refetch,
+    linkProfile,
+    linkPost,
   } = props;
   const date = new Date(Date.parse(modifiedDatetime));
 
@@ -80,7 +82,7 @@ function Post(props) {
 
   return !!image || !!description ? (
     <Card className={classes.Post}>
-      <Link to={{ pathname: `/profile/${username}/${tag}` }}>
+      <ConditionalLink to={{ pathname: `/profile/${username}/${tag}` }} condition={!!linkProfile}>
         <CardHeader
           avatar={
             <Avatar
@@ -92,8 +94,8 @@ function Post(props) {
           title={`${userFirstName} ${userLastName}`}
           subheader={`@${username}#${tag}`}
         />
-      </Link>
-      <Link to={{ pathname: `/post/${postId}` }}>
+      </ConditionalLink>
+      <ConditionalLink to={{ pathname: `/post/${postId}` }} condition={!!linkPost}>
         {!!description ? (
           <CardContent>
             <Typography variant="body2" component="h3">
@@ -102,7 +104,7 @@ function Post(props) {
           </CardContent>
         ) : null}
         {!!image ? <CardMedia component="img" image={image} /> : null}
-      </Link>
+      </ConditionalLink>
       {!!showActions && (
         <CardActions>
           <Button onClick={handleLike}>
