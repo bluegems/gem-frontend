@@ -1,11 +1,11 @@
-import { Avatar, Chip, makeStyles, Paper, Typography } from '@material-ui/core';
+import { Avatar, makeStyles, Paper, Typography } from '@material-ui/core';
 import React from 'react';
 
 const useStyles = makeStyles((theme) => ({
   CommentPaper: {
     padding: theme.spacing(1),
     marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1)
+    marginBottom: theme.spacing(1),
   },
   CommentContainer: {
     display: 'flex',
@@ -42,12 +42,12 @@ function PostComment({ comment }) {
           <div className={classes.CommentUser}>
             <Avatar alt={firstName} src={String(profilePicture)} className={classes.UserAvatar} />
             <Typography
-              variant="h7"
+              variant="body2"
               className={classes.UserName}
             >{`${firstName} ${lastName}`}</Typography>
           </div>
           <div className={classes.CommentText}>
-            <Typography variant="body2">{comment.text}</Typography>
+            <Typography variant="body1">{comment.text}</Typography>
           </div>
         </div>
       </Paper>

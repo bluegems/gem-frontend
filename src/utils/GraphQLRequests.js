@@ -54,40 +54,7 @@ export const GET_FRIENDS_POSTS = gql`
       id
       description
       image
-      modifiedDatetime
-      user {
-        username
-        tag
-        firstName
-        lastName
-        profilePicture
-      }
-    }
-  }
-`;
-
-export const GET_CURRENT_USER_AND_FRIENDS_POSTS = gql`
-  query GetCurrentUserAndFriendsPosts {
-    getCurrentUser {
-      username
-      tag
-      firstName
-      lastName
-      bio
-      birthdate
-      profilePicture
-      friends {
-        username
-        tag
-        firstName
-        lastName
-        profilePicture
-      }
-    }
-    getFriendsPosts {
-      id
-      description
-      image
+      isLiked
       modifiedDatetime
       user {
         username
@@ -154,6 +121,7 @@ export const GET_USER_INFORMATION = gql`
         id
         description
         image
+        isLiked
         modifiedDatetime
         user {
           username
@@ -261,8 +229,10 @@ export const UNFRIEND_USER = gql`
 export const GET_POST = gql`
   query GetPost($id: Int!) {
     getPost(id: $id) {
+      id
       description
       image
+      isLiked
       modifiedDatetime
       user {
         username
@@ -281,6 +251,48 @@ export const GET_POST = gql`
           lastName
           profilePicture
         }
+      }
+    }
+  }
+`;
+
+export const CREATE_POST = gql`
+  mutation CreatePost($description: String) {
+    createPost(description: $description) {
+      id
+      description
+      image
+    }
+  }
+`;
+
+export const LIKE_POST = gql`
+  mutation LikePost($id: Int!) {
+    likePost(id: $id) {
+      isLiked
+    }
+  }
+`;
+
+export const UNLIKE_POST = gql`
+  mutation UnlikePost($id: Int!) {
+    unlikePost(id: $id) {
+      isLiked
+    }
+  }
+`;
+
+export const CREATE_COMMENT = gql`
+  mutation CreateComment($text: String!, $postId: Int!) {
+    createComment(text: $text, postId: $postId) {
+      id
+      text
+      user {
+        username
+        tag
+        firstName
+        lastName
+        profilePicture
       }
     }
   }

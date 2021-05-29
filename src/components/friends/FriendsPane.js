@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles, Typography } from '@material-ui/core';
+import { Block } from '@material-ui/icons';
 import FriendStatus from './FriendStatus';
 
 const useStyles = makeStyles((theme) => ({
@@ -21,18 +22,46 @@ function FriendsPane({ friends }) {
   const classes = useStyles();
 
   return !!friends ? (
-    <div className={classes.FriendsListRoot}>
-      {friends.map((friend) => (
-        <Link
-          to={{ pathname: `/profile/${friend.username}/${friend.tag}` }}
-          key={`${friend.username}#${friend.tag}`}
+    <>
+      {!!friends.length ? (
+        <div className={classes.FriendsListRoot}>
+          {friends.map((friend) => (
+            <Link
+              to={{ pathname: `/profile/${friend.username}/${friend.tag}` }}
+              key={`${friend.username}#${friend.tag}`}
+            >
+              <FriendStatus friend={friend} />
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <div
+          style={{
+            display: 'flex',
+            flexFlow: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '30vh',
+          }}
         >
-          <FriendStatus friend={friend} />
-        </Link>
-      ))}
-    </div>
+          <Block style={{ width: '80px', height: '80px' }} />
+          <Typography style={{ color: 'gray' }}>No friends</Typography>
+        </div>
+      )}
+    </>
   ) : (
-    <p>Cannot view this user&apos;s friends</p>
+    <div
+      style={{
+        display: 'flex',
+        flexFlow: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '50vh',
+      }}
+    >
+      <Block style={{ width: '80px', height: '80px' }} />
+      <Typography style={{ color: 'gray' }}>Cannot view this user&apos;s friends</Typography>
+    </div>
   );
 }
 

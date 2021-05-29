@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { Container, Grid, makeStyles, Paper } from '@material-ui/core';
+import { Container, makeStyles, Paper } from '@material-ui/core';
 import { useQuery } from '@apollo/client';
 
 import GemHeader from '../components/GemHeader';
@@ -52,7 +52,7 @@ function PostPage() {
     data: currentPostData,
     error: currentPostError,
     refetch: refetchCurrentPost,
-  } = useQuery(GET_POST, { variables: { id: Number(postId) } });
+  } = useQuery(!!postId && GET_POST, { variables: { id: Number(postId) } });
 
   React.useEffect(() => {
     if (!currentPostData) return;
@@ -77,7 +77,12 @@ function PostPage() {
                 <Post post={post} />
               </div>
               <div className={classes.PostActionsPane}>
-                <PostActionsPane comments={comments} />
+                <PostActionsPane
+                  comments={comments}
+                  refetch={refetchCurrentPost}
+                  postId={postId}
+                  isLiked={post.isLiked}
+                />
               </div>
             </div>
           </Paper>

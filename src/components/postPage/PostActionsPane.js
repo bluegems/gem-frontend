@@ -1,20 +1,8 @@
-import {
-  Divider,
-  Grid,
-  IconButton,
-  makeStyles,
-  Paper,
-  TextField,
-  Typography,
-} from '@material-ui/core';
-import {
-  Block,
-  FavoriteBorderOutlined,
-  InsertCommentOutlined,
-  Send,
-  SendOutlined,
-} from '@material-ui/icons';
+import { useMutation } from '@apollo/client';
+import { Button, makeStyles, Paper, TextField, Typography } from '@material-ui/core';
+import { Block, Favorite, FavoriteBorderOutlined, Send } from '@material-ui/icons';
 import React from 'react';
+import { CREATE_COMMENT, LIKE_POST, UNLIKE_POST } from '../../utils/GraphQLRequests';
 import PostComment from './PostComment';
 
 const useStyles = makeStyles((theme) => ({
@@ -51,15 +39,47 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function PostActionsPane({ comments }) {
+function PostActionsPane({ comments, postId, isLiked, refetch }) {
   const classes = useStyles();
+
+  const [createComment, { data: createCommentData, error: createCommentError }] = useMutation(
+    CREATE_COMMENT
+  );
+  const [likePost, { data: likePostData, error: likePostError }] = useMutation(LIKE_POST);
+  const [unlikePost, { data: unlikePostData, error: unlikePostError }] = useMutation(UNLIKE_POST);
+  const [text, setText] = React.useState('');
+
+  React.useEffect(() => {
+    if (createCommentError || likePostError || unlikePostError) return;
+    if (!createCommentData) return;
+    refetch();
+  }, [createCommentData, createCommentError]);
+
+  React.useEffect(() => {
+    if (likePostError) return;
+    if (!likePostData) return;
+    refetch();
+  }, [likePostData, likePostError]);
+
+  React.useEffect(() => {
+    if (unlikePostError) return;
+    if (!unlikePostData) return;
+    refetch();
+  }, [unlikePostData, unlikePostError]);
+
+  const handleLike = () =>
+    !!isLiked ? unlikePost({ variables: { id: postId } }) : likePost({ variables: { id: postId } });
 
   return (
     <>
       <Paper elevation={1} className={classes.ActionsPane}>
-        <IconButton>
-          <FavoriteBorderOutlined className={classes.LikeButton} />
-        </IconButton>
+        <Button onClick={handleLike}>
+          {!!isLiked ? (
+            <Favorite className={classes.LikeButton} color="secondary" />
+          ) : (
+            <FavoriteBorderOutlined className={classes.LikeButton} />
+          )}
+        </Button>
         {!!comments.length ? (
           <Paper variant="elevation" square elevation={1} className={classes.CommentsContainer}>
             {comments.map((comment) => (
@@ -81,8 +101,24 @@ function PostActionsPane({ comments }) {
           </div>
         )}
         <div className={classes.CommentFormContainer}>
-          <form className={classes.CommentForm}>
+          <form
+            onSubmit={async (event) => {
+              event.preventDefault();
+              await createComment({
+                variables: {
+                  text,
+                  postId,
+                },
+              });
+              setText('');
+            }}
+            className={classes.CommentForm}
+          >
             <TextField
+              value={text}
+              onChange={(event) => {
+                setText(event.target.value);
+              }}
               variant="outlined"
               margin="normal"
               id="comment"
@@ -94,9 +130,15 @@ function PostActionsPane({ comments }) {
               rowsMax={3}
               fullWidth
             />
-            <IconButton>
-              <Send />
-            </IconButton>
+            {!!text.trim() ? (
+              <Button type="submit">
+                <Send />
+              </Button>
+            ) : (
+              <Button type="submit" disabled>
+                <Send />
+              </Button>
+            )}
           </form>
         </div>
       </Paper>

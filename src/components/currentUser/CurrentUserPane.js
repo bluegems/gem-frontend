@@ -35,6 +35,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     justifyContent: 'space-around',
     alignItems: 'center',
+    margin: theme.spacing(1),
     width: '100%',
   },
 }));
@@ -57,15 +58,17 @@ function LeftPane() {
           <Typography variant="body2">{`@${username}#${tag}`}</Typography>
         </div>
       </div>
-      <div className={classes.Bio}>
-        <Typography variant="body1">{`"${bio}"`}</Typography>
-      </div>
+      {!!bio && (
+        <div className={classes.Bio}>
+          <Typography variant="body1">{`"${bio}"`}</Typography>
+        </div>
+      )}
       <Grid container className={classes.UserButtons}>
         <Grid item>
           <EditProfile />
         </Grid>
         <Grid item>
-          <Link to={{ pathname: `/profile/${username}/${tag}`}}>
+          <Link to={{ pathname: `/profile/${username}/${tag}` }}>
             <Button variant="outlined" color="primary">
               View Profile
             </Button>

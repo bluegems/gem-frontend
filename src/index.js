@@ -30,13 +30,24 @@ const authorizationMiddleware = new ApolloLink((operation, forward) => {
 const client = new ApolloClient({
   cache: new InMemoryCache(),
   link: concat(authorizationMiddleware, httpLink),
+  defaultOptions: {
+    watchQuery: {
+      fetchPolicy: 'no-cache',
+    },
+    query: {
+      fetchPolicy: 'no-cache',
+    },
+    mutate: {
+      fetchPolicy: 'no-cache',
+    },
+  },
+  connectToDevTools: true,
 });
-
 
 ReactDOM.render(
   <ApolloProvider client={client}>
     <React.StrictMode>
-        <App />
+      <App />
     </React.StrictMode>
   </ApolloProvider>,
   document.getElementById('root')

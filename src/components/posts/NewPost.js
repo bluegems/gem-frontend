@@ -1,6 +1,9 @@
 import React from 'react';
 import { Button, Grid, IconButton, makeStyles, Paper, TextField } from '@material-ui/core';
 import { ImageOutlined } from '@material-ui/icons';
+import { useMutation } from '@apollo/client';
+
+import { CREATE_POST } from '../../utils/GraphQLRequests';
 
 const useStyles = makeStyles((theme) => ({
   NewPostContainer: {
@@ -24,13 +27,31 @@ const useStyles = makeStyles((theme) => ({
 function NewPost() {
   const classes = useStyles();
 
+  const [description, setDescription] = React.useState(null);
+
+  const [createPost] = useMutation(CREATE_POST);
+
   return (
     <Paper variant="outlined" square className={classes.NewPostContainer}>
       <Paper className={classes.NewPost}>
-        <form>
+        <form
+          onSubmit={() => {
+            createPost({
+              variables: {
+                description,
+              },
+            });
+          }}
+        >
           <Grid container spacing={1}>
             <Grid item xs={10} className={classes.gridItem}>
-              <TextField id="description" label="Description" variant="outlined" fullWidth />
+              <TextField
+                onChange={(event) => setDescription(event.target.value)}
+                id="description"
+                label="Description"
+                variant="outlined"
+                fullWidth
+              />
             </Grid>
             <Grid item xs={2} className={classes.gridItem}>
               <input accept="image/*" className={classes.input} id="icon-button-file" type="file" />

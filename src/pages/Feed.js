@@ -9,20 +9,25 @@ import NewPost from '../components/posts/NewPost';
 import PostsFeed from '../components/posts/PostsFeed';
 import FriendsPane from '../components/friends/FriendsPane';
 import GemHeader from '../components/GemHeader';
-import { GET_CURRENT_USER_AND_FRIENDS_POSTS } from '../utils/GraphQLRequests';
+import { GET_CURRENT_USER, GET_FRIENDS_POSTS } from '../utils/GraphQLRequests';
 
 function Feed() {
   const { authenticatedUserInfo, setAuthenticatedUserInfo } = React.useContext(
     AuthenticatedUserContext
   );
   const [friendsPosts, setFriendsPosts] = React.useState(null);
-  const { data } = useQuery(GET_CURRENT_USER_AND_FRIENDS_POSTS);
+  const { data: currentUserData } = useQuery(GET_CURRENT_USER);
+  const { data: friendsPostsData } = useQuery(GET_FRIENDS_POSTS);
 
   useEffect(() => {
-    if (!data) return;
-    setAuthenticatedUserInfo(data.getCurrentUser);
-    setFriendsPosts(data.getFriendsPosts);
-  }, [data]);
+    if (!currentUserData) return;
+    setAuthenticatedUserInfo(currentUserData.getCurrentUser);
+  }, [currentUserData]);
+
+  useEffect(() => {
+    if (!friendsPostsData) return;
+    setFriendsPosts(friendsPostsData.getFriendsPosts);
+  }, [friendsPostsData]);
 
   return (
     !!authenticatedUserInfo && (

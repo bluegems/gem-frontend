@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Typography } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 
 import AuthenticatedUserContext from '../../contexts/AuthenticatedUserContext';
 import RequestFriendshipButton from './actionButtons/RequestFriendshipButton';

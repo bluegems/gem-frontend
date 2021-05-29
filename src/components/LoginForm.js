@@ -31,7 +31,7 @@ function LoginForm() {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
 
-  const [login, { data, error }] = useMutation(LOGIN);
+  const [login, { data, error }] = useMutation(LOGIN, { fetchPolicy: 'no-cache' });
 
   React.useEffect(() => {
     if (!data) return;
