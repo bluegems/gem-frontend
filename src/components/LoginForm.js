@@ -1,14 +1,13 @@
-// React
-import React from 'react';
-import { useLocation, useHistory } from 'react-router-dom';
-// 3rd party
-import { Button, TextField, Grid, Link } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 import { useMutation } from '@apollo/client';
+import { Button, Grid, Link, TextField } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import React from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import Cookies from 'universal-cookie';
-// Custom
+import SnackbarContext from '../contexts/SnackbarContext';
+import { catchErrorOnMutation } from '../utils/CommonUtils';
+import { GEM_AUTHORIZATION_TOKEN_COOKIE, TOAST_SEVERITY_ERROR } from '../utils/Constants';
 import { LOGIN } from '../utils/GraphQLRequests';
-import { GEM_AUTHORIZATION_TOKEN_COOKIE } from '../utils/Constants';
 
 const cookies = new Cookies();
 
@@ -31,24 +30,34 @@ function LoginForm() {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
 
-  const [login, { data, error }] = useMutation(LOGIN, { fetchPolicy: 'no-cache' });
+  const { setSnackbarOpen, setSnackbarMessage, setSnackbarSeverity } = React.useContext(
+    SnackbarContext
+  );
+
+  const toast = (severity, message) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  };
+
+  const [login, { data, error }] = useMutation(LOGIN);
 
   React.useEffect(() => {
     if (!data) return;
     setCookie(data.login);
     history.replace(state?.from || '/feed');
-  }, [data, error]);
+  }, [data]);
+  React.useEffect(() => {
+    if (!!error) {
+      toast(TOAST_SEVERITY_ERROR, 'Failed to login');
+    }
+  }, [error]);
 
   return (
     <form
       onSubmit={async (event) => {
         event.preventDefault();
-        await login({
-          variables: {
-            email,
-            password,
-          },
-        });
+        catchErrorOnMutation(login, { email, password });
       }}
     >
       <Grid container spacing={1}>

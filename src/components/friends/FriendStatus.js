@@ -1,5 +1,7 @@
 import React from 'react';
 import { Avatar, Badge, makeStyles, Typography, withStyles } from '@material-ui/core';
+import { getImgurLink } from '../../utils/CommonUtils';
+import { IMGUR_SMALL_SQUARE } from '../../utils/Constants';
 
 const useStyles = makeStyles((theme) => ({
   FriendStatus: {
@@ -32,34 +34,12 @@ function FriendStatus(props) {
   const classes = useStyles();
 
   const {
-    friend: {
-      firstName: userFirstName,
-      lastName: userLastName,
-      profilePicture
-    }
+    friend: { firstName: userFirstName, lastName: userLastName, profilePicture },
   } = props;
-  const online = true;
-
-  // const {
-  //   friend: { userFirstName, userLastName, profilePicture, online },
-  // } = props;
 
   return (
     <div className={classes.FriendStatus}>
-      {online ? (
-        <StyledBadge
-          overlap="circle"
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'right',
-          }}
-          variant="dot"
-        >
-          <Avatar alt={userFirstName} src={profilePicture} />
-        </StyledBadge>
-      ) : (
-        <Avatar alt={userFirstName} src={profilePicture} />
-      )}
+      <Avatar alt={userFirstName} src={getImgurLink(profilePicture, IMGUR_SMALL_SQUARE)} />
       <Typography className={classes.UserName}>{`${userFirstName} ${userLastName}`}</Typography>
     </div>
   );

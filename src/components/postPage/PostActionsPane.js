@@ -2,6 +2,9 @@ import { useMutation } from '@apollo/client';
 import { Button, makeStyles, Paper, TextField, Typography } from '@material-ui/core';
 import { Block, Favorite, FavoriteBorderOutlined, Send } from '@material-ui/icons';
 import React from 'react';
+import SnackbarContext from '../../contexts/SnackbarContext';
+import { catchErrorOnMutation } from '../../utils/CommonUtils';
+import { TOAST_SEVERITY_ERROR } from '../../utils/Constants';
 import { CREATE_COMMENT, LIKE_POST, UNLIKE_POST } from '../../utils/GraphQLRequests';
 import PostComment from './PostComment';
 
@@ -42,6 +45,10 @@ const useStyles = makeStyles((theme) => ({
 function PostActionsPane({ comments, postId, isLiked, refetch }) {
   const classes = useStyles();
 
+  const { setSnackbarOpen, setSnackbarSeverity, setSnackbarMessage } = React.useContext(
+    SnackbarContext
+  );
+
   const [createComment, { data: createCommentData, error: createCommentError }] = useMutation(
     CREATE_COMMENT
   );
@@ -49,26 +56,40 @@ function PostActionsPane({ comments, postId, isLiked, refetch }) {
   const [unlikePost, { data: unlikePostData, error: unlikePostError }] = useMutation(UNLIKE_POST);
   const [text, setText] = React.useState('');
 
+  const toast = (severity, message) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  };
+
   React.useEffect(() => {
-    if (createCommentError || likePostError || unlikePostError) return;
+    if (!!createCommentError) toast(TOAST_SEVERITY_ERROR, 'Failed to create comment');
+  }, [createCommentError]);
+  React.useEffect(() => {
     if (!createCommentData) return;
     refetch();
-  }, [createCommentData, createCommentError]);
+  }, [createCommentData]);
 
   React.useEffect(() => {
-    if (likePostError) return;
+    if (!!likePostError) toast(TOAST_SEVERITY_ERROR, 'Failed to like post');
+  }, [likePostError]);
+  React.useEffect(() => {
     if (!likePostData) return;
     refetch();
-  }, [likePostData, likePostError]);
+  }, [likePostData]);
 
   React.useEffect(() => {
-    if (unlikePostError) return;
+    if (!!unlikePostError) toast(TOAST_SEVERITY_ERROR, 'Failed to unlike post');
+  }, [unlikePostError]);
+  React.useEffect(() => {
     if (!unlikePostData) return;
     refetch();
-  }, [unlikePostData, unlikePostError]);
+  }, [unlikePostData]);
 
   const handleLike = () =>
-    !!isLiked ? unlikePost({ variables: { id: postId } }) : likePost({ variables: { id: postId } });
+    !!isLiked
+      ? catchErrorOnMutation(unlikePost, { id: postId })
+      : catchErrorOnMutation(likePost, { id: postId });
 
   return (
     <>
@@ -104,11 +125,9 @@ function PostActionsPane({ comments, postId, isLiked, refetch }) {
           <form
             onSubmit={async (event) => {
               event.preventDefault();
-              await createComment({
-                variables: {
-                  text,
-                  postId,
-                },
+              await catchErrorOnMutation(createComment, {
+                text,
+                postId,
               });
               setText('');
             }}

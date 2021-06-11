@@ -4,6 +4,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useMutation } from '@apollo/client';
 
 import { REGISTER } from '../utils/GraphQLRequests';
+import SnackbarContext from '../contexts/SnackbarContext';
+import { TOAST_SEVERITY_ERROR } from '../utils/Constants';
+import { catchErrorOnMutation } from '../utils/CommonUtils';
 
 const useStyles = makeStyles({
   submit: {
@@ -11,9 +14,12 @@ const useStyles = makeStyles({
   },
 });
 
-// TODO: Toast on error
 function RegisterForm() {
   const classes = useStyles();
+
+  const { setSnackbarOpen, setSnackbarMessage, setSnackbarSeverity } = React.useContext(
+    SnackbarContext
+  );
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -22,7 +28,16 @@ function RegisterForm() {
   const [password, setPassword] = useState('');
 
   // TODO: Redirect to login or just log the user in
-  const [register, { loading, error }] = useMutation(REGISTER);
+  const [register, { data, loading, error }] = useMutation(REGISTER);
+
+  React.useEffect(() => {
+    if (error) {
+      console.log(error);
+      setSnackbarMessage('Invalid credentials');
+      setSnackbarSeverity(TOAST_SEVERITY_ERROR);
+      setSnackbarOpen(true);
+    }
+  }, [data, error]);
 
   return (
     <div>
@@ -30,15 +45,12 @@ function RegisterForm() {
         noValidate
         onSubmit={async (event) => {
           event.preventDefault();
-          console.log(email.value);
-          await register({
-            variables: {
-              email,
-              password,
-              firstName,
-              lastName,
-              username,
-            },
+          await catchErrorOnMutation(register, {
+            email,
+            password,
+            firstName,
+            lastName,
+            username,
           });
         }}
       >

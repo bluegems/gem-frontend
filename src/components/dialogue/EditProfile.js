@@ -50,7 +50,7 @@ function EditProfile() {
           Edit Profile
         </DialogTitle>
         <DialogContent>
-          <EditPersonalInformation />
+          <EditPersonalInformation closeDialog={handleClose} />
         </DialogContent>
       </Dialog>
     </>

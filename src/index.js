@@ -15,6 +15,17 @@ import { GEM_AUTHORIZATION_TOKEN_COOKIE, GEM_GRAPHQL_URI } from './utils/Constan
 const cookies = new Cookies();
 
 // Apollo
+const defaultOptions = {
+  watchQuery: {
+    fetchPolicy: 'no-cache',
+  },
+  query: {
+    fetchPolicy: 'no-cache',
+  },
+  mutate: {
+    fetchPolicy: 'no-cache',
+  },
+};
 const httpLink = new HttpLink({ uri: GEM_GRAPHQL_URI });
 const authorizationMiddleware = new ApolloLink((operation, forward) => {
   const token = cookies.get(GEM_AUTHORIZATION_TOKEN_COOKIE);
@@ -22,6 +33,7 @@ const authorizationMiddleware = new ApolloLink((operation, forward) => {
     operation.setContext({
       headers: {
         authorization: `Bearer ${token}`,
+        'Access-Control-Allow-Origin': '*',
       },
     });
   }
@@ -30,25 +42,14 @@ const authorizationMiddleware = new ApolloLink((operation, forward) => {
 const client = new ApolloClient({
   cache: new InMemoryCache(),
   link: concat(authorizationMiddleware, httpLink),
-  defaultOptions: {
-    watchQuery: {
-      fetchPolicy: 'no-cache',
-    },
-    query: {
-      fetchPolicy: 'no-cache',
-    },
-    mutate: {
-      fetchPolicy: 'no-cache',
-    },
-  },
-  connectToDevTools: true,
+  defaultOptions,
 });
 
 ReactDOM.render(
   <ApolloProvider client={client}>
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
+    {/* <React.StrictMode> */}
+    <App />
+    {/* </React.StrictMode> */}
   </ApolloProvider>,
   document.getElementById('root')
 );

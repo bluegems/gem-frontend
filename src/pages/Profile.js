@@ -1,15 +1,13 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
 import { Container, Grid } from '@material-ui/core';
-
+import React from 'react';
+import { useParams } from 'react-router-dom';
+import UsersPane from '../components/friends/UsersPane';
 import GemHeader from '../components/GemHeader';
-import ProfileInformation from '../components/profile/ProfileInformation';
 import PostsFeed from '../components/posts/PostsFeed';
-import FriendsPane from '../components/friends/FriendsPane';
-
-import { GET_USER_INFORMATION, GET_CURRENT_USER } from '../utils/GraphQLRequests';
+import ProfileInformation from '../components/profile/ProfileInformation';
 import AuthenticatedUserContext from '../contexts/AuthenticatedUserContext';
+import { GET_CURRENT_USER, GET_USER_INFORMATION } from '../utils/GraphQLRequests';
 
 function Profile() {
   const { username, tag } = useParams();
@@ -51,7 +49,13 @@ function Profile() {
               {!!posts && <PostsFeed posts={userInformation.posts} linkPost />}
             </Grid>
             <Grid item lg={3}>
-              {!!friends && <FriendsPane friends={userInformation.friends} />}
+              {!!friends && (
+                <UsersPane
+                  users={userInformation.friends}
+                  paneHeading={`${userInformation.firstName}'s friends`}
+                  emptyMessage="This user has no friends"
+                />
+              )}
             </Grid>
           </Grid>
         </Container>

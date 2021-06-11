@@ -1,14 +1,14 @@
-import React from 'react';
-import { useHistory, Link } from 'react-router-dom';
-import { Button, Container, makeStyles, Paper } from '@material-ui/core';
 import { ApolloConsumer } from '@apollo/client';
+import { Button, Container, makeStyles, Paper } from '@material-ui/core';
+import { SearchOutlined } from '@material-ui/icons';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import React from 'react';
+import { Link, useHistory } from 'react-router-dom';
 import Cookies from 'universal-cookie';
-import Logo from './Logo';
-
 import AuthenticatedUserContext from '../contexts/AuthenticatedUserContext';
 import { GEM_AUTHORIZATION_TOKEN_COOKIE } from '../utils/Constants';
 import { GEM_HEADER_HEIGHT } from '../utils/CssConstants';
+import Logo from './Logo';
 
 const cookies = new Cookies();
 
@@ -25,6 +25,11 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
+  },
+  navbarIcons: {
+    display: 'flex',
+    justifyContent: 'space-around',
+    alignItems: 'center',
   },
 }));
 
@@ -51,13 +56,20 @@ function GemHeader() {
         <Link to={{ pathname: '/feed' }}>
           <Logo />
         </Link>
-        <ApolloConsumer>
-          {(client) => (
-            <Button onClick={() => handleLogout(client)}>
-              <ExitToAppIcon fontSize="large" />
+        <div className={classes.navbarIcons}>
+          <Link to={{ pathname: '/search' }}>
+            <Button>
+              <SearchOutlined fontSize="large" />
             </Button>
-          )}
-        </ApolloConsumer>
+          </Link>
+          <ApolloConsumer>
+            {(client) => (
+              <Button onClick={() => handleLogout(client)}>
+                <ExitToAppIcon fontSize="large" />
+              </Button>
+            )}
+          </ApolloConsumer>
+        </div>
       </Container>
     </Paper>
   );

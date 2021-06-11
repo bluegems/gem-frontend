@@ -44,6 +44,25 @@ export const GET_CURRENT_USER = gql`
         lastName
         profilePicture
       }
+      friendRequests {
+        username
+        tag
+        firstName
+        lastName
+        profilePicture
+      }
+    }
+  }
+`;
+
+export const SEARCH_USERS = gql`
+  query SearchUsers($searchString: String!) {
+    searchUsers(searchString: $searchString) {
+      username
+      tag
+      firstName
+      lastName
+      profilePicture
     }
   }
 `;
@@ -74,6 +93,8 @@ export const UPDATE_PROFILE_INFORMATION = gql`
     $firstName: String!
     $lastName: String
     $bio: String
+    $profilePicture: ImageInput
+    $keepPreviousPicture: Boolean!
   ) {
     updateUser(
       username: $username
@@ -81,6 +102,8 @@ export const UPDATE_PROFILE_INFORMATION = gql`
       firstName: $firstName
       lastName: $lastName
       bio: $bio
+      profilePicture: $profilePicture
+      keepPreviousPicture: $keepPreviousPicture
     ) {
       username
       tag
@@ -257,8 +280,8 @@ export const GET_POST = gql`
 `;
 
 export const CREATE_POST = gql`
-  mutation CreatePost($description: String) {
-    createPost(description: $description) {
+  mutation CreatePost($description: String, $image: ImageInput) {
+    createPost(description: $description, image: $image) {
       id
       description
       image

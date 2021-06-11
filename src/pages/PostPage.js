@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
   },
   PostDivContainer: {
     display: 'flex',
-    justifyContent: 'space-between',
+    justifyContent: 'space-evenly',
     alignItems: 'center',
     minHeight: '100%',
     // maxHeight: '100%',
@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
   PostItem: {
     display: 'flex',
     alignItems: 'center',
-    width: '60%',
+    width: '40%',
   },
   PostActionsPane: {
     width: '40%',

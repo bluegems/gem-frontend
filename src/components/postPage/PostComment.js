@@ -1,5 +1,7 @@
 import { Avatar, makeStyles, Paper, Typography } from '@material-ui/core';
 import React from 'react';
+import { getImgurLink } from '../../utils/CommonUtils';
+import { IMGUR_SMALL_SQUARE } from '../../utils/Constants';
 
 const useStyles = makeStyles((theme) => ({
   CommentPaper: {
@@ -40,7 +42,11 @@ function PostComment({ comment }) {
       <Paper variant="outlined" className={classes.CommentPaper}>
         <div className={classes.CommentContainer}>
           <div className={classes.CommentUser}>
-            <Avatar alt={firstName} src={String(profilePicture)} className={classes.UserAvatar} />
+            <Avatar
+              alt={firstName}
+              src={getImgurLink(profilePicture, IMGUR_SMALL_SQUARE)}
+              className={classes.UserAvatar}
+            />
             <Typography
               variant="body2"
               className={classes.UserName}

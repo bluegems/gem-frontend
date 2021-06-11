@@ -13,7 +13,8 @@ import {
 import { Favorite, FavoriteBorderOutlined, InsertCommentOutlined } from '@material-ui/icons';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { dateToString } from '../../utils/CommonUtils';
+import { dateToString, getImgurLink } from '../../utils/CommonUtils';
+import { IMGUR_LARGE_THUMBNAIL, IMGUR_SMALL_SQUARE } from '../../utils/Constants';
 import { LIKE_POST, UNLIKE_POST } from '../../utils/GraphQLRequests';
 import { ConditionalLink } from '../../utils/LinkUtils';
 
@@ -87,7 +88,7 @@ function Post(props) {
           avatar={
             <Avatar
               alt={userFirstName}
-              src={String(profilePicture)}
+              src={getImgurLink(profilePicture, IMGUR_SMALL_SQUARE)}
               className={classes.UserAvatar}
             />
           }
@@ -103,7 +104,9 @@ function Post(props) {
             </Typography>
           </CardContent>
         ) : null}
-        {!!image ? <CardMedia component="img" image={image} /> : null}
+        {!!image ? (
+          <CardMedia component="img" image={getImgurLink(image, IMGUR_LARGE_THUMBNAIL)} />
+        ) : null}
       </ConditionalLink>
       {!!showActions && (
         <CardActions>

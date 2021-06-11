@@ -6,6 +6,8 @@ import { Avatar, Button, Grid, makeStyles, Typography } from '@material-ui/core'
 // Custom
 import AuthenticatedUserContext from '../../contexts/AuthenticatedUserContext';
 import EditProfile from '../dialogue/EditProfile';
+import { getImgurLink } from '../../utils/CommonUtils';
+import { IMGUR_BIG_SQUARE } from '../../utils/Constants';
 
 const useStyles = makeStyles((theme) => ({
   UserInfo: {
@@ -51,7 +53,11 @@ function LeftPane() {
     <div className={classes.UserInfo}>
       <div className={classes.UserInfoNested}>
         <div>
-          <Avatar alt={firstName} src={String(profilePicture)} className={classes.UserAvatar} />
+          <Avatar
+            alt={firstName}
+            src={String(getImgurLink(profilePicture, IMGUR_BIG_SQUARE))}
+            className={classes.UserAvatar}
+          />
         </div>
         <div className={classes.UserDetails}>
           <Typography variant="h6">{`${firstName} ${lastName}`}</Typography>

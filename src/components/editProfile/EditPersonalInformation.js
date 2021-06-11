@@ -1,10 +1,20 @@
-import React, { useContext } from 'react';
-import { Avatar, Button, Divider, Grid, makeStyles, TextField, Snackbar } from '@material-ui/core';
-import MuiAlert from '@material-ui/lab/Alert';
 import { useMutation } from '@apollo/client';
-
+import { Avatar, Button, Divider, Grid, makeStyles, TextField } from '@material-ui/core';
+import React, { useContext } from 'react';
 import AuthenticatedUserContext from '../../contexts/AuthenticatedUserContext';
-
+import SnackbarContext from '../../contexts/SnackbarContext';
+import {
+  catchErrorOnMutation,
+  getImgurLink,
+  isValidImageFile,
+  isValidSize,
+} from '../../utils/CommonUtils';
+import {
+  IMGUR_MEDIUM_THUMBNAIL,
+  IMGUR_UPLOAD_LIMIT_MB,
+  TOAST_SEVERITY_ERROR,
+  TOAST_SEVERITY_SUCCESS,
+} from '../../utils/Constants';
 import { UPDATE_PROFILE_INFORMATION } from '../../utils/GraphQLRequests';
 
 const useStyles = makeStyles((theme) => ({
@@ -28,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: theme.spacing(2),
   },
   UserAvatar: {
     width: theme.spacing(26),
@@ -36,14 +47,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
-
-function EditPersonalInformation() {
+function EditPersonalInformation({ closeDialog }) {
   const classes = useStyles();
 
   const { authenticatedUserInfo, setAuthenticatedUserInfo } = useContext(AuthenticatedUserContext);
+  const { setSnackbarOpen, setSnackbarMessage, setSnackbarSeverity } = useContext(SnackbarContext);
 
   const {
     username: contextUsername,
@@ -59,12 +67,10 @@ function EditPersonalInformation() {
   const [stateFirstName, setStateFirstName] = React.useState(contextFirstName);
   const [stateLastName, setStateLastName] = React.useState(contextLastName);
   const [stateBio, setStateBio] = React.useState(contextBio);
-  const [stateProfilePicture, setStateProfilePicture] = React.useState(contextProfilePicture);
 
-  const [successOpen, setSuccessOpen] = React.useState(false);
-  const [errorOpen, setErrorOpen] = React.useState(false);
-  const handleSuccessClose = () => setSuccessOpen(false);
-  const handleErrorClose = () => setErrorOpen(false);
+  const [stateProfilePicture, setStateProfilePicture] = React.useState(null);
+  const [stateProfilePictureUrl, setStateProfilePictureUrl] = React.useState('');
+  const [keepPreviousPicture, setKeepPreviousPicture] = React.useState(true);
 
   const infoHasChanged = () => {
     const hasChanged =
@@ -72,11 +78,35 @@ function EditPersonalInformation() {
       contextTag !== stateTag ||
       contextFirstName !== stateFirstName ||
       contextLastName !== stateLastName ||
-      contextBio !== stateBio;
+      contextBio !== stateBio ||
+      !keepPreviousPicture;
     return hasChanged;
   };
 
+  const toast = (severity, message) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  };
+
+  const handleRemovePicture = () => {
+    // If picture was empty before, keepPrevious=true
+    setKeepPreviousPicture(!contextProfilePicture);
+    // Remove new profile picture
+    setStateProfilePicture(null);
+    setStateProfilePictureUrl('');
+  };
+
+  const resetProfilePicture = () => {
+    // Keep old profile picture
+    setKeepPreviousPicture(true);
+    // Remove new profile picture
+    setStateProfilePicture(null);
+    setStateProfilePictureUrl('');
+  };
+
   const handleReset = () => {
+    resetProfilePicture();
     setStateUsername(contextUsername);
     setStateTag(contextTag);
     setStateFirstName(contextFirstName);
@@ -84,144 +114,182 @@ function EditPersonalInformation() {
     setStateBio(contextBio);
   };
 
-  const [updateUser] = useMutation(UPDATE_PROFILE_INFORMATION, {
-    onCompleted: (data) => {
-      setSuccessOpen(true);
-      setAuthenticatedUserInfo({ ...authenticatedUserInfo, ...data.updateUser });
-    },
-    onError: () => {
+  const handleProfilePictureUpload = (event) => {
+    event.preventDefault();
+    const file = event.target.files[0];
+    if (!isValidImageFile(file)) {
+      resetProfilePicture();
+      toast(TOAST_SEVERITY_ERROR, 'Upload jpeg, jpg or png');
+      return;
+    }
+    if (!isValidSize(file, IMGUR_UPLOAD_LIMIT_MB)) {
+      resetProfilePicture();
+      toast(TOAST_SEVERITY_ERROR, `Upload image less than ${IMGUR_UPLOAD_LIMIT_MB} MB`);
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const base64String = reader.result.replace('data:', '').replace(/^.+,/, '');
+      setStateProfilePictureUrl(reader.result);
+      setStateProfilePicture({
+        base64String,
+        filename: file.name,
+      });
+      setKeepPreviousPicture(false);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const [updateUser, { data: updateUserData, error: updateUserError }] = useMutation(
+    UPDATE_PROFILE_INFORMATION
+  );
+
+  React.useEffect(() => {
+    if (!!updateUserError) {
       handleReset();
-      setErrorOpen(true);
-    },
-  });
+      toast(TOAST_SEVERITY_ERROR, 'Failed to update profile');
+      closeDialog();
+    }
+  }, [updateUserError]);
+  React.useEffect(async () => {
+    if (!updateUserData) return;
+    toast(TOAST_SEVERITY_SUCCESS, 'User profile updated');
+    await setAuthenticatedUserInfo({ ...authenticatedUserInfo, ...updateUserData.updateUser });
+    closeDialog();
+  }, [updateUserData]);
 
   return (
-    <>
-      <form
-        noValidate
-        onSubmit={async (event) => {
-          event.preventDefault();
-          await updateUser({
-            variables: {
-              username: stateUsername,
-              tag: stateTag,
-              firstName: stateFirstName,
-              lastName: stateLastName,
-              bio: stateBio,
-            },
-          });
-        }}
-      >
-        <Grid container className={classes.GridContainer} spacing={1}>
-          <Grid item lg={12} className={classes.ImageAndBio}>
-            <input accept="image/*" className={classes.input} id="profile-picture" type="file" />
-            <label htmlFor="profile-picture" className={classes.Label}>
+    <form
+      noValidate
+      onSubmit={async (event) => {
+        event.preventDefault();
+        await catchErrorOnMutation(updateUser, {
+          username: stateUsername,
+          tag: stateTag,
+          firstName: stateFirstName,
+          lastName: stateLastName,
+          bio: stateBio,
+          profilePicture: stateProfilePicture,
+          keepPreviousPicture,
+        });
+      }}
+    >
+      <Grid container className={classes.GridContainer} spacing={1}>
+        <Grid item lg={12} className={classes.ImageAndBio}>
+          <input
+            accept="image/*"
+            className={classes.input}
+            id="profile-picture"
+            type="file"
+            onChange={handleProfilePictureUpload}
+          />
+          <label htmlFor="profile-picture" className={classes.Label}>
+            {!!keepPreviousPicture ? (
               <Avatar
                 alt={stateFirstName}
-                src={String(stateProfilePicture)}
+                src={getImgurLink(contextProfilePicture, IMGUR_MEDIUM_THUMBNAIL)}
                 className={classes.UserAvatar}
               />
-            </label>
+            ) : (
+              <Avatar
+                alt={stateFirstName}
+                src={!!stateProfilePictureUrl ? String(stateProfilePictureUrl) : 'fake-image-url'}
+                className={classes.UserAvatar}
+              />
+            )}
+          </label>
+          <Button variant="outlined" onClick={handleRemovePicture}>
+            Remove picture
+          </Button>
+          <TextField
+            value={stateBio}
+            onChange={(event) => setStateBio(event.target.value)}
+            variant="outlined"
+            margin="normal"
+            id="bio"
+            label="Bio"
+            name="bio"
+            fullWidth
+            rows={3}
+            multiline
+          />
+        </Grid>
+        <Grid container spacing={3}>
+          <Grid item lg={6}>
             <TextField
-              value={stateBio}
-              onChange={(event) => setStateBio(event.target.value)}
+              value={stateUsername}
+              onChange={(event) => setStateUsername(event.target.value)}
               variant="outlined"
               margin="normal"
-              id="bio"
-              label="Bio"
-              name="bio"
+              id="username"
+              name="username"
+              label="Username"
               fullWidth
-              rows={3}
-              multiline
+              required
             />
           </Grid>
-          <Grid container spacing={3}>
-            <Grid item lg={6}>
-              <TextField
-                value={stateUsername}
-                onChange={(event) => setStateUsername(event.target.value)}
-                variant="outlined"
-                margin="normal"
-                id="username"
-                name="username"
-                label="Username"
-                fullWidth
-                required
-              />
-            </Grid>
-            <Grid item lg={6}>
-              <TextField
-                value={stateTag}
-                onChange={(event) => setStateTag(event.target.value)}
-                variant="outlined"
-                margin="normal"
-                id="tag"
-                name="tag"
-                label="Tag"
-                fullWidth
-                required
-              />
-            </Grid>
-          </Grid>
-          <Grid container spacing={3}>
-            <Grid item lg={6}>
-              <TextField
-                value={stateFirstName}
-                onChange={(event) => setStateFirstName(event.target.value)}
-                name="firstName"
-                margin="normal"
-                variant="outlined"
-                id="firstName"
-                label="First Name"
-                required
-                fullWidth
-              />
-            </Grid>
-            <Grid item lg={6}>
-              <TextField
-                value={stateLastName}
-                onChange={(event) => setStateLastName(event.target.value)}
-                variant="outlined"
-                margin="normal"
-                id="lastName"
-                label="Last Name"
-                name="lastName"
-                fullWidth
-              />
-            </Grid>
+          <Grid item lg={6}>
+            <TextField
+              value={stateTag}
+              onChange={(event) => setStateTag(event.target.value)}
+              variant="outlined"
+              margin="normal"
+              id="tag"
+              name="tag"
+              label="Tag"
+              fullWidth
+              required
+            />
           </Grid>
         </Grid>
-        <Divider variant="middle" />
-        <Grid container className={classes.GridContainer}>
-          <Grid item>
-            <Button type="reset" variant="outlined" color="primary" onClick={handleReset}>
-              REVERT CHANGES
+        <Grid container spacing={3}>
+          <Grid item lg={6}>
+            <TextField
+              value={stateFirstName}
+              onChange={(event) => setStateFirstName(event.target.value)}
+              name="firstName"
+              margin="normal"
+              variant="outlined"
+              id="firstName"
+              label="First Name"
+              required
+              fullWidth
+            />
+          </Grid>
+          <Grid item lg={6}>
+            <TextField
+              value={stateLastName}
+              onChange={(event) => setStateLastName(event.target.value)}
+              variant="outlined"
+              margin="normal"
+              id="lastName"
+              label="Last Name"
+              name="lastName"
+              fullWidth
+            />
+          </Grid>
+        </Grid>
+      </Grid>
+      <Divider variant="middle" />
+      <Grid container className={classes.GridContainer}>
+        <Grid item>
+          <Button type="reset" variant="outlined" color="primary" onClick={handleReset}>
+            REVERT CHANGES
+          </Button>
+        </Grid>
+        <Grid item>
+          {infoHasChanged() ? (
+            <Button type="submit" variant="contained" color="primary">
+              APPLY CHANGES
             </Button>
-          </Grid>
-          <Grid item>
-            {infoHasChanged() ? (
-              <Button type="submit" variant="contained" color="primary">
-                APPLY CHANGES
-              </Button>
-            ) : (
-              <Button type="submit" variant="contained" color="primary" disabled>
-                APPLY CHANGES
-              </Button>
-            )}
-          </Grid>
+          ) : (
+            <Button type="submit" variant="contained" color="primary" disabled>
+              APPLY CHANGES
+            </Button>
+          )}
         </Grid>
-      </form>
-      <Snackbar open={successOpen} autoHideDuration={6000} onClose={handleSuccessClose}>
-        <Alert onClose={handleSuccessClose} severity="success">
-          User profile updated!
-        </Alert>
-      </Snackbar>
-      <Snackbar open={errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
-        <Alert onClose={handleErrorClose} severity="error">
-          Failed to update profile information
-        </Alert>
-      </Snackbar>
-    </>
+      </Grid>
+    </form>
   );
 }
 

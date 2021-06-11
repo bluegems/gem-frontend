@@ -3,6 +3,8 @@ import React from 'react';
 import { Avatar, Divider, Grid, makeStyles, Paper, Typography } from '@material-ui/core';
 
 import FriendshipActions from './FriendshipActions';
+import { getImgurLink } from '../../utils/CommonUtils';
+import { IMGUR_MEDIUM_THUMBNAIL } from '../../utils/Constants';
 
 const useStyles = makeStyles((theme) => ({
   UserAvatar: {
@@ -38,7 +40,11 @@ function ProfileInformation({ posts, friends, refetch, ...userInformation }) {
     <Paper elevation={0} className={classes.PaperContainer}>
       <Grid container>
         <Grid item lg={9} className={classes.PersonalInformationContainer}>
-          <Avatar alt={firstName} src={String(profilePicture)} className={classes.UserAvatar} />
+          <Avatar
+            alt={firstName}
+            src={getImgurLink(profilePicture, IMGUR_MEDIUM_THUMBNAIL)}
+            className={classes.UserAvatar}
+          />
           <div className={classes.NamesContainer}>
             <div>
               <Typography variant="h2">{`${firstName} ${lastName}`}</Typography>

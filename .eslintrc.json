@@ -38,6 +38,7 @@
       }
     ],
     "react/jsx-props-no-spreading": "off",
+    "react/prefer-stateless-function": "off",
 
     "no-return-assign": "warn",
     "no-param-reassign": "warn",
