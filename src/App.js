@@ -1,6 +1,5 @@
 import { CssBaseline } from '@material-ui/core';
 import React from 'react';
-import { BrowserRouter as Router, Switch } from 'react-router-dom';
 import './App.css';
 import ToastMessage from './components/common/ToastMessage';
 import AuthenticatedUserContext from './contexts/AuthenticatedUserContext';
@@ -19,27 +18,23 @@ function App() {
   return (
     <div className="App">
       <CssBaseline />
-      <Router>
-        <AuthenticatedUserContext.Provider
-          value={{ authenticatedUserInfo, setAuthenticatedUserInfo }}
+      <AuthenticatedUserContext.Provider
+        value={{ authenticatedUserInfo, setAuthenticatedUserInfo }}
+      >
+        <SnackbarContext.Provider
+          value={{
+            snackbarOpen,
+            snackbarMessage,
+            snackbarSeverity,
+            setSnackbarOpen,
+            setSnackbarMessage,
+            setSnackbarSeverity,
+          }}
         >
-          <SnackbarContext.Provider
-            value={{
-              snackbarOpen,
-              snackbarMessage,
-              snackbarSeverity,
-              setSnackbarOpen,
-              setSnackbarMessage,
-              setSnackbarSeverity,
-            }}
-          >
-            <Switch>
-              <Routes />
-            </Switch>
-            <ToastMessage />
-          </SnackbarContext.Provider>
-        </AuthenticatedUserContext.Provider>
-      </Router>
+          <Routes />
+          <ToastMessage />
+        </SnackbarContext.Provider>
+      </AuthenticatedUserContext.Provider>
     </div>
   );
 }
