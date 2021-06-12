@@ -18,7 +18,7 @@ const useStyles = makeStyles({
 });
 
 const setCookie = function setCookie(token) {
-  cookies.set(GEM_AUTHORIZATION_TOKEN_COOKIE, token, { path: '/', sameSite: 'strict' });
+  cookies.set(GEM_AUTHORIZATION_TOKEN_COOKIE, token, { path: '/' });
 };
 
 function LoginForm() {
@@ -57,6 +57,7 @@ function LoginForm() {
     <form
       onSubmit={(event) => {
         event.preventDefault();
+        cookies.remove(GEM_AUTHORIZATION_TOKEN_COOKIE);
         catchErrorOnMutation(login, { email, password });
       }}
     >
