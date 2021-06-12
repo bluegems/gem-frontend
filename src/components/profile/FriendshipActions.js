@@ -1,20 +1,19 @@
-import React from 'react';
 import { Typography } from '@material-ui/core';
-
+import React from 'react';
 import AuthenticatedUserContext from '../../contexts/AuthenticatedUserContext';
-import RequestFriendshipButton from './actionButtons/RequestFriendshipButton';
-import AcceptFriendshipButton from './actionButtons/AcceptFriendshipButton';
-import DeclineFriendshipButton from './actionButtons/DeclineFriendshipButton';
-import DeleteRequestButton from './actionButtons/DeleteRequestButton';
-import BlockUserButton from './actionButtons/BlockUserButton';
-import UnblockUserButton from './actionButtons/UnblockUserButton';
-import UnfriendUserButton from './actionButtons/UnfriendUserButton';
 import {
   FRIENDSHIP_ACCEPTED,
   FRIENDSHIP_BLOCKED,
   FRIENDSHIP_DECLINED,
   FRIENDSHIP_REQUESTED,
 } from '../../utils/Constants';
+import AcceptFriendshipButton from './actionButtons/AcceptFriendshipButton';
+import BlockUserButton from './actionButtons/BlockUserButton';
+import DeclineFriendshipButton from './actionButtons/DeclineFriendshipButton';
+import DeleteRequestButton from './actionButtons/DeleteRequestButton';
+import RequestFriendshipButton from './actionButtons/RequestFriendshipButton';
+import UnblockUserButton from './actionButtons/UnblockUserButton';
+import UnfriendUserButton from './actionButtons/UnfriendUserButton';
 
 function FriendshipActions({ friendship, username, tag, refetch }) {
   const {
@@ -25,7 +24,6 @@ function FriendshipActions({ friendship, username, tag, refetch }) {
   if (sameUser) return null;
 
   // User is viewing another user's profile
-  // const [friendship, setFriendship] = React.useState(currentFriendship);
   const { exists } = friendship;
 
   // Populate all buttons before returning
@@ -33,7 +31,6 @@ function FriendshipActions({ friendship, username, tag, refetch }) {
   const buttonProps = {
     username,
     tag,
-    // setFriendship,
     refetch,
   };
 
@@ -65,6 +62,7 @@ function FriendshipActions({ friendship, username, tag, refetch }) {
       );
     }
   }
+
   if (status === FRIENDSHIP_DECLINED) {
     // Current user has declined this user's friend request and can request if he/she wants to
     if (modifiedByUsername === contextUsername && modifiedByTag === contextTag) {
@@ -80,6 +78,7 @@ function FriendshipActions({ friendship, username, tag, refetch }) {
       );
     }
   }
+
   if (status === FRIENDSHIP_BLOCKED) {
     // Current user has blocked the other user
     if (modifiedByUsername === contextUsername && modifiedByTag === contextTag) {
@@ -94,6 +93,8 @@ function FriendshipActions({ friendship, username, tag, refetch }) {
       );
     }
   }
+
+  // The users are friends
   if (status === FRIENDSHIP_ACCEPTED) {
     actionButtons.push(<UnfriendUserButton {...buttonProps} key="unfriend" />);
   }

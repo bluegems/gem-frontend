@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { Button, TextField, Grid, Link } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 import { useMutation } from '@apollo/client';
-
-import { REGISTER } from '../utils/GraphQLRequests';
+import { Button, Grid, Link, TextField } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import SnackbarContext from '../contexts/SnackbarContext';
-import { TOAST_SEVERITY_ERROR } from '../utils/Constants';
 import { catchErrorOnMutation } from '../utils/CommonUtils';
+import { TOAST_SEVERITY_ERROR, TOAST_SEVERITY_SUCCESS } from '../utils/Constants';
+import { REGISTER } from '../utils/GraphQLRequests';
 
 const useStyles = makeStyles({
   submit: {
@@ -16,10 +16,16 @@ const useStyles = makeStyles({
 
 function RegisterForm() {
   const classes = useStyles();
+  const history = useHistory();
 
   const { setSnackbarOpen, setSnackbarMessage, setSnackbarSeverity } = React.useContext(
     SnackbarContext
   );
+  const toast = (severity, message) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  };
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -27,17 +33,16 @@ function RegisterForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  // TODO: Redirect to login or just log the user in
-  const [register, { data, loading, error }] = useMutation(REGISTER);
+  const [register, { data, error }] = useMutation(REGISTER);
 
   React.useEffect(() => {
-    if (error) {
-      console.log(error);
-      setSnackbarMessage('Invalid credentials');
-      setSnackbarSeverity(TOAST_SEVERITY_ERROR);
-      setSnackbarOpen(true);
-    }
-  }, [data, error]);
+    if (!!error) toast(TOAST_SEVERITY_ERROR, 'Failed to register. Try again');
+  }, [error]);
+  React.useEffect(() => {
+    if (!data) return;
+    toast(TOAST_SEVERITY_SUCCESS, 'Registration successful!');
+    history.replace('/login');
+  }, [data]);
 
   return (
     <div>
@@ -138,8 +143,6 @@ function RegisterForm() {
           </Grid>
         </Grid>
       </form>
-      {loading && <p>Loading ...</p>}
-      {error && <p>Error !!!</p>}
     </div>
   );
 }

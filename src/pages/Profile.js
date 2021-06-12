@@ -1,37 +1,58 @@
 import { useQuery } from '@apollo/client';
 import { Container, Grid } from '@material-ui/core';
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import UsersPane from '../components/friends/UsersPane';
 import GemHeader from '../components/GemHeader';
 import PostsFeed from '../components/posts/PostsFeed';
 import ProfileInformation from '../components/profile/ProfileInformation';
 import AuthenticatedUserContext from '../contexts/AuthenticatedUserContext';
+import SnackbarContext from '../contexts/SnackbarContext';
+import { TOAST_SEVERITY_ERROR } from '../utils/Constants';
 import { GET_CURRENT_USER, GET_USER_INFORMATION } from '../utils/GraphQLRequests';
 
 function Profile() {
+  const history = useHistory();
   const { username, tag } = useParams();
 
   const [userInformation, setUserInformation] = React.useState(null);
   const [posts, setPosts] = React.useState(null);
   const [friends, setFriends] = React.useState(null);
 
+  const { setSnackbarOpen, setSnackbarMessage, setSnackbarSeverity } = React.useContext(
+    SnackbarContext
+  );
+  const toast = (severity, message) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  };
+
   const { authenticatedUserInfo, setAuthenticatedUserInfo } = React.useContext(
     AuthenticatedUserContext
   );
 
-  const { data: currentUserData } = useQuery(GET_CURRENT_USER);
-  const { data: userData, error, refetch } = useQuery(GET_USER_INFORMATION, {
+  const { data: currentUserData, error: currentUserError } = useQuery(GET_CURRENT_USER);
+  const { data: userData, error: userError, refetch } = useQuery(GET_USER_INFORMATION, {
     variables: { username, tag },
   });
 
+  React.useEffect(() => {
+    if (!!userError) toast(TOAST_SEVERITY_ERROR, 'Could not fetch user details, try refreshing');
+  }, [userError]);
   React.useEffect(() => {
     if (!userData) return;
     setUserInformation(userData.getUser);
     setPosts(userData.getUser.posts);
     setFriends(userData.getUser.friends);
-  }, [userData, error]);
+  }, [userData]);
 
+  React.useEffect(() => {
+    if (!!currentUserError) {
+      toast(TOAST_SEVERITY_ERROR, "We're facing some issues on the server");
+      history.replace('/login');
+    }
+  }, [currentUserError]);
   React.useEffect(() => {
     if (!currentUserData) return;
     setAuthenticatedUserInfo(currentUserData.getCurrentUser);

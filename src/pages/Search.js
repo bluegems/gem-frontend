@@ -2,9 +2,13 @@ import { useLazyQuery, useQuery } from '@apollo/client';
 import { Button, Container, Divider, makeStyles, TextField, Typography } from '@material-ui/core';
 import { Block, SearchOutlined } from '@material-ui/icons';
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import GemHeader from '../components/GemHeader';
 import SearchResultUser from '../components/search/SearchResultUser';
 import AuthenticatedUserContext from '../contexts/AuthenticatedUserContext';
+import SnackbarContext from '../contexts/SnackbarContext';
+import { catchErrorOnLazyQuery } from '../utils/CommonUtils';
+import { TOAST_SEVERITY_ERROR } from '../utils/Constants';
 import { GET_CURRENT_USER, SEARCH_USERS } from '../utils/GraphQLRequests';
 
 const useStyles = makeStyles((theme) => ({
@@ -30,29 +34,45 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Search() {
+  const history = useHistory();
   const classes = useStyles();
 
-  const { authenticatedUserInfo, setAuthenticatedUserInfo } = React.useContext(
-    AuthenticatedUserContext
+  const { setSnackbarOpen, setSnackbarMessage, setSnackbarSeverity } = React.useContext(
+    SnackbarContext
   );
+  const toast = (severity, message) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  };
+
+  const { setAuthenticatedUserInfo } = React.useContext(AuthenticatedUserContext);
 
   const [searchString, setSearchString] = React.useState('');
   const [searchResultUsers, setSearchResultUsers] = React.useState(null);
 
-  const { data } = useQuery(GET_CURRENT_USER);
+  const { data: currentUserData, error: currentUserError } = useQuery(GET_CURRENT_USER);
   React.useEffect(() => {
-    if (!data) return;
-    setAuthenticatedUserInfo(data.getCurrentUser);
-  }, [data]);
+    if (!!currentUserError) {
+      toast(TOAST_SEVERITY_ERROR, "We're facing some issues on that server");
+      history.replace('/login');
+    }
+  }, [currentUserError]);
+  React.useEffect(() => {
+    if (!currentUserData) return;
+    setAuthenticatedUserInfo(currentUserData.getCurrentUser);
+  }, [currentUserData]);
 
   const [searchUsers, { data: searchUsersData, error: searchUsersError }] = useLazyQuery(
     SEARCH_USERS
   );
   React.useEffect(() => {
-    if (searchUsersError) return;
+    if (!!searchUsersError) toast(TOAST_SEVERITY_ERROR, 'Failed to search for users');
+  }, [searchUsersError]);
+  React.useEffect(() => {
     if (!searchUsersData) return;
     setSearchResultUsers(searchUsersData.searchUsers);
-  }, [searchUsersData, searchUsersError]);
+  }, [searchUsersData]);
 
   return (
     <>
@@ -62,10 +82,8 @@ function Search() {
           <form
             onSubmit={async (event) => {
               event.preventDefault();
-              await searchUsers({
-                variables: {
-                  searchString,
-                },
+              await catchErrorOnLazyQuery(searchUsers, {
+                searchString,
               });
             }}
             className={classes.SearchForm}

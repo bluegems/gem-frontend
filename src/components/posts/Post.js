@@ -13,10 +13,15 @@ import {
 import { Favorite, FavoriteBorderOutlined, InsertCommentOutlined } from '@material-ui/icons';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { dateToString, getImgurLink } from '../../utils/CommonUtils';
-import { IMGUR_LARGE_THUMBNAIL, IMGUR_SMALL_SQUARE } from '../../utils/Constants';
+import { catchErrorOnMutation, dateToString, getImgurLink } from '../../utils/CommonUtils';
+import {
+  IMGUR_LARGE_THUMBNAIL,
+  IMGUR_SMALL_SQUARE,
+  TOAST_SEVERITY_ERROR,
+} from '../../utils/Constants';
 import { LIKE_POST, UNLIKE_POST } from '../../utils/GraphQLRequests';
 import { ConditionalLink } from '../../utils/LinkUtils';
+import SnackbarContext from '../../contexts/SnackbarContext';
 
 const useStyles = makeStyles((theme) => ({
   Post: {
@@ -39,6 +44,16 @@ const useStyles = makeStyles((theme) => ({
 function Post(props) {
   const classes = useStyles();
 
+  const { setSnackbarOpen, setSnackbarMessage, setSnackbarSeverity } = React.useContext(
+    SnackbarContext
+  );
+
+  const toast = (severity, message) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  };
+
   const {
     post: {
       id: postId,
@@ -59,27 +74,23 @@ function Post(props) {
   const [unlikePost, { data: unlikePostData, error: unlikePostError }] = useMutation(UNLIKE_POST);
 
   React.useEffect(() => {
-    if (likePostError || unlikePostError) return;
-    if (!!likePostData) {
-      console.log('IS LIKED : ', likePostData.likePost.isLiked);
-      setPostIsLiked(likePostData.likePost.isLiked);
-    }
-  }, [likePostData, likePostError]);
+    if (!!likePostError) toast(TOAST_SEVERITY_ERROR, 'Failed to like post');
+  }, [likePostError]);
+  React.useEffect(() => {
+    if (!!likePostData) setPostIsLiked(likePostData.likePost.isLiked);
+  }, [likePostData]);
 
   React.useEffect(() => {
-    if (unlikePostError) return;
-    if (!!unlikePostData) {
-      console.log('IS LIKED : ', unlikePostData.unlikePost.isLiked);
-      setPostIsLiked(unlikePostData.unlikePost.isLiked);
-    }
-  }, [unlikePostData, unlikePostError]);
+    if (!!unlikePostError) toast(TOAST_SEVERITY_ERROR, 'Failed to unlike post');
+  }, [unlikePostError]);
+  React.useEffect(() => {
+    if (!!unlikePostData) setPostIsLiked(unlikePostData.unlikePost.isLiked);
+  }, [unlikePostData]);
 
-  const handleLike = () => {
-    console.log(postIsLiked);
-    return !!postIsLiked
-      ? unlikePost({ variables: { id: postId } })
-      : likePost({ variables: { id: postId } });
-  };
+  const handleLike = () =>
+    !!postIsLiked
+      ? catchErrorOnMutation(unlikePost, { id: postId })
+      : catchErrorOnMutation(likePost, { id: postId });
 
   return !!image || !!description ? (
     <Card className={classes.Post}>

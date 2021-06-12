@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { Container, makeStyles, Paper } from '@material-ui/core';
 import { useQuery } from '@apollo/client';
 
@@ -9,6 +9,8 @@ import AuthenticatedUserContext from '../contexts/AuthenticatedUserContext';
 import { GET_CURRENT_USER, GET_POST } from '../utils/GraphQLRequests';
 import Post from '../components/posts/Post';
 import { GEM_HEADER_HEIGHT } from '../utils/CssConstants';
+import SnackbarContext from '../contexts/SnackbarContext';
+import { TOAST_SEVERITY_ERROR } from '../utils/Constants';
 
 const useStyles = makeStyles((theme) => ({
   PostContainer: {
@@ -42,6 +44,16 @@ const useStyles = makeStyles((theme) => ({
 function PostPage() {
   const classes = useStyles();
   const { id: postId } = useParams();
+  const history = useHistory();
+
+  const { setSnackbarOpen, setSnackbarMessage, setSnackbarSeverity } = React.useContext(
+    SnackbarContext
+  );
+  const toast = (severity, message) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  };
 
   const { setAuthenticatedUserInfo } = React.useContext(AuthenticatedUserContext);
   const [post, setPost] = React.useState(null);
@@ -55,12 +67,26 @@ function PostPage() {
   } = useQuery(!!postId && GET_POST, { variables: { id: Number(postId) } });
 
   React.useEffect(() => {
+    if (!!currentPostError) {
+      if (!currentUserData.getPost) {
+        toast(TOAST_SEVERITY_ERROR, "Cannot see a stranger's posts");
+        history.replace('/feed');
+      }
+    }
+  }, [currentPostError]);
+  React.useEffect(() => {
     if (!currentPostData) return;
     const { comments: postComments, ...currentPost } = currentPostData.getPost;
     setPost(currentPost);
     setComments(postComments);
-  }, [currentPostData, currentPostError]);
+  }, [currentPostData]);
 
+  React.useEffect(() => {
+    if (!!currentUserError) {
+      toast(TOAST_SEVERITY_ERROR, "We're facing some issues on the server");
+      history.replace('/login');
+    }
+  }, [currentUserError]);
   React.useEffect(() => {
     if (!currentUserData) return;
     setAuthenticatedUserInfo(currentUserData.getCurrentUser);

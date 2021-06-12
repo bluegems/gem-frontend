@@ -55,7 +55,7 @@ function LoginForm() {
 
   return (
     <form
-      onSubmit={async (event) => {
+      onSubmit={(event) => {
         event.preventDefault();
         catchErrorOnMutation(login, { email, password });
       }}

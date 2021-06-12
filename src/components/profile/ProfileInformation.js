@@ -1,10 +1,8 @@
-import React from 'react';
-
 import { Avatar, Divider, Grid, makeStyles, Paper, Typography } from '@material-ui/core';
-
-import FriendshipActions from './FriendshipActions';
+import React from 'react';
 import { getImgurLink } from '../../utils/CommonUtils';
 import { IMGUR_MEDIUM_THUMBNAIL } from '../../utils/Constants';
+import FriendshipActions from './FriendshipActions';
 
 const useStyles = makeStyles((theme) => ({
   UserAvatar: {

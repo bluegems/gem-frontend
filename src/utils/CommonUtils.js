@@ -48,6 +48,14 @@ export async function catchErrorOnMutation(mutation, input) {
   }
 }
 
+export async function catchErrorOnLazyQuery(lazyQuery, input) {
+  try {
+    await lazyQuery({ variables: input });
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 export function catchErrorOnQuery(queryGQL, input) {
   try {
     return useQuery(queryGQL, { variables: input });

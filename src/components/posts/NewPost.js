@@ -1,16 +1,15 @@
-import React from 'react';
+import { useMutation } from '@apollo/client';
 import { Avatar, Button, Grid, IconButton, makeStyles, Paper, TextField } from '@material-ui/core';
 import { ImageOutlined } from '@material-ui/icons';
-import { useMutation } from '@apollo/client';
-
-import { CREATE_POST } from '../../utils/GraphQLRequests';
-import { catchErrorOnMutation, isValidImageFile, isValidSize } from '../../utils/CommonUtils';
+import React from 'react';
 import SnackbarContext from '../../contexts/SnackbarContext';
+import { catchErrorOnMutation, isValidImageFile, isValidSize } from '../../utils/CommonUtils';
 import {
   IMGUR_UPLOAD_LIMIT_MB,
   TOAST_SEVERITY_ERROR,
   TOAST_SEVERITY_SUCCESS,
 } from '../../utils/Constants';
+import { CREATE_POST } from '../../utils/GraphQLRequests';
 
 const useStyles = makeStyles((theme) => ({
   NewPostContainer: {
@@ -85,13 +84,13 @@ function NewPost() {
     reader.readAsDataURL(file);
   };
 
-  React.useState(() => {
+  React.useEffect(() => {
     if (!!createPostError) {
       handleReset();
       toast(TOAST_SEVERITY_ERROR, 'Failed to create post');
     }
   }, [createPostError]);
-  React.useState(() => {
+  React.useEffect(() => {
     if (!createPostData) return;
     handleReset();
     toast(TOAST_SEVERITY_SUCCESS, 'Created new post');

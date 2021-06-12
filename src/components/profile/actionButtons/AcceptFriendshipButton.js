@@ -10,13 +10,13 @@ function AcceptFriendshipButton({ username, tag, refetch }) {
   const { setSnackbarOpen, setSnackbarMessage, setSnackbarSeverity } = React.useContext(
     SnackbarContext
   );
-  const [acceptFriendship, { data, error }] = useMutation(ACCEPT_FRIENDSHIP);
-
   const toast = (severity, message) => {
     setSnackbarMessage(message);
     setSnackbarSeverity(severity);
     setSnackbarOpen(true);
   };
+
+  const [acceptFriendship, { data, error }] = useMutation(ACCEPT_FRIENDSHIP);
 
   const handleAcceptFriendship = () => {
     catchErrorOnMutation(acceptFriendship, { username, tag });
