@@ -47,10 +47,9 @@ function PostComment({ comment }) {
               src={getImgurLink(profilePicture, IMGUR_SMALL_SQUARE)}
               className={classes.UserAvatar}
             />
-            <Typography
-              variant="body2"
-              className={classes.UserName}
-            >{`${firstName} ${lastName}`}</Typography>
+            <Typography variant="body2" className={classes.UserName}>{`${firstName} ${
+              !!lastName ? lastName : ''
+            }`}</Typography>
           </div>
           <div className={classes.CommentText}>
             <Typography variant="body1">{comment.text}</Typography>

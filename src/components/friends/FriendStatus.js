@@ -24,7 +24,9 @@ function FriendStatus(props) {
   return (
     <div className={classes.FriendStatus}>
       <Avatar alt={userFirstName} src={getImgurLink(profilePicture, IMGUR_SMALL_SQUARE)} />
-      <Typography className={classes.UserName}>{`${userFirstName} ${userLastName}`}</Typography>
+      <Typography className={classes.UserName}>{`${userFirstName} ${
+        !!userLastName ? userLastName : ''
+      }`}</Typography>
     </div>
   );
 }

@@ -103,7 +103,7 @@ function Post(props) {
               className={classes.UserAvatar}
             />
           }
-          title={`${userFirstName} ${userLastName}`}
+          title={`${userFirstName} ${!!userLastName ? userLastName : ''}`}
           subheader={`@${username}#${tag}`}
         />
       </ConditionalLink>

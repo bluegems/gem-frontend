@@ -45,7 +45,7 @@ function ProfileInformation({ posts, friends, refetch, ...userInformation }) {
           />
           <div className={classes.NamesContainer}>
             <div>
-              <Typography variant="h2">{`${firstName} ${lastName}`}</Typography>
+              <Typography variant="h2">{`${firstName} ${!!lastName ? lastName : ''}`}</Typography>
               <Typography variant="body1">{`@${username}#${tag}`}</Typography>
             </div>
             {!!bio && (

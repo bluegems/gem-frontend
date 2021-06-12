@@ -60,7 +60,7 @@ function LeftPane() {
           />
         </div>
         <div className={classes.UserDetails}>
-          <Typography variant="h6">{`${firstName} ${lastName}`}</Typography>
+          <Typography variant="h6">{`${firstName} ${!!lastName ? lastName : ''}`}</Typography>
           <Typography variant="body2">{`@${username}#${tag}`}</Typography>
         </div>
       </div>
