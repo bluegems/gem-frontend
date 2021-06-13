@@ -65,8 +65,10 @@ function EditPersonalInformation({ closeDialog }) {
   const [stateUsername, setStateUsername] = React.useState(contextUsername);
   const [stateTag, setStateTag] = React.useState(contextTag);
   const [stateFirstName, setStateFirstName] = React.useState(contextFirstName);
-  const [stateLastName, setStateLastName] = React.useState(contextLastName);
-  const [stateBio, setStateBio] = React.useState(contextBio);
+  const [stateLastName, setStateLastName] = React.useState(
+    !!contextLastName ? contextLastName : ''
+  );
+  const [stateBio, setStateBio] = React.useState(!!contextBio ? contextBio : '');
 
   const [stateProfilePicture, setStateProfilePicture] = React.useState(null);
   const [stateProfilePictureUrl, setStateProfilePictureUrl] = React.useState('');
@@ -77,8 +79,8 @@ function EditPersonalInformation({ closeDialog }) {
       contextUsername !== stateUsername ||
       contextTag !== stateTag ||
       contextFirstName !== stateFirstName ||
-      contextLastName !== stateLastName ||
-      contextBio !== stateBio ||
+      (!!contextLastName ? contextLastName : '') !== stateLastName ||
+      (!!contextBio ? contextBio : '') !== stateBio ||
       !keepPreviousPicture;
     return hasChanged;
   };
@@ -110,8 +112,8 @@ function EditPersonalInformation({ closeDialog }) {
     setStateUsername(contextUsername);
     setStateTag(contextTag);
     setStateFirstName(contextFirstName);
-    setStateLastName(contextLastName);
-    setStateBio(contextBio);
+    setStateLastName(!!contextLastName ? contextLastName : '');
+    setStateBio(!!contextBio ? contextBio : '');
   };
 
   const handleProfilePictureUpload = (event) => {
