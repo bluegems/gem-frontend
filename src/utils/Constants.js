@@ -1,5 +1,6 @@
 export const GEM_AUTHORIZATION_TOKEN_COOKIE = 'gemAuthToken';
-export const GEM_GRAPHQL_URI = 'http://localhost:8080/graphql';
+// export const GEM_GRAPHQL_URI = 'http://localhost:8080/graphql';
+export const GEM_GRAPHQL_URI = process.env.REACT_APP_GEM_GRAPHQL_URI;
 
 export const FRIENDSHIP_REQUESTED = 'REQUESTED';
 export const FRIENDSHIP_ACCEPTED = 'ACCEPTED';

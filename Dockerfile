@@ -2,6 +2,7 @@
 FROM node:14.17-alpine as build
 WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
+ENV REACT_APP_GEM_GRAPHQL_URI http://127.0.0.1:60195/graphql
 
 COPY package.json ./
 COPY yarn.lock ./
