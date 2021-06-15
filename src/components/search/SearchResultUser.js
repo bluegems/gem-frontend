@@ -32,7 +32,7 @@ function SearchResultUser({ username, tag, firstName, lastName, profilePicture }
     <Link to={{ pathname: `/profile/${username}/${tag}` }} className={classes.UserLink}>
       <Paper className={classes.UserPaper}>
         <Avatar alt={firstName} src={String(profilePicture)} className={classes.UserAvatar} />
-        <Typography variant="h6" noWrap>{`${firstName} ${lastName}`}</Typography>
+        <Typography variant="h6" noWrap>{`${firstName} ${!!lastName ? lastName : ''}`}</Typography>
         <Typography variant="body2">{`@${username}#${tag}`}</Typography>
       </Paper>
     </Link>
