@@ -55,6 +55,7 @@ function LoginForm() {
 
   return (
     <form
+      autoComplete="off"
       onSubmit={(event) => {
         event.preventDefault();
         cookies.remove(GEM_AUTHORIZATION_TOKEN_COOKIE);

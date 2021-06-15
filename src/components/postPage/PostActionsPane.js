@@ -123,6 +123,7 @@ function PostActionsPane({ comments, postId, isLiked, refetch }) {
         )}
         <div className={classes.CommentFormContainer}>
           <form
+            autoComplete="off"
             onSubmit={async (event) => {
               event.preventDefault();
               await catchErrorOnMutation(createComment, {

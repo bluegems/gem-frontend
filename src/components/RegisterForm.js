@@ -54,6 +54,7 @@ function RegisterForm() {
   return (
     <div>
       <form
+        autoComplete="off"
         noValidate
         onSubmit={async (event) => {
           event.preventDefault();

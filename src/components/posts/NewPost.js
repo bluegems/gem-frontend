@@ -102,6 +102,7 @@ function NewPost() {
     <Paper variant="outlined" square className={classes.NewPostContainer}>
       <Paper className={classes.NewPost}>
         <form
+          autoComplete="off"
           onSubmit={async (event) => {
             event.preventDefault();
             await catchErrorOnMutation(createPost, { description, image });

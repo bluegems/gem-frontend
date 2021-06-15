@@ -80,6 +80,7 @@ function Search() {
       <Container maxWidth="lg">
         <div className={classes.SearchSection}>
           <form
+            autoComplete="off"
             onSubmit={async (event) => {
               event.preventDefault();
               await catchErrorOnLazyQuery(searchUsers, {
