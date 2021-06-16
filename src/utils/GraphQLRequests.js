@@ -35,7 +35,6 @@ export const GET_CURRENT_USER = gql`
       firstName
       lastName
       bio
-      birthdate
       profilePicture
       friends {
         username
@@ -110,7 +109,6 @@ export const UPDATE_PROFILE_INFORMATION = gql`
       firstName
       lastName
       bio
-      birthdate
       profilePicture
     }
   }

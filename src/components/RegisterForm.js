@@ -55,7 +55,6 @@ function RegisterForm() {
     <div>
       <form
         autoComplete="off"
-        noValidate
         onSubmit={async (event) => {
           event.preventDefault();
           cookies.remove(GEM_AUTHORIZATION_TOKEN_COOKIE);
