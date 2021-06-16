@@ -3,6 +3,7 @@ import { useMutation } from '@apollo/client';
 import { Button } from '@material-ui/core';
 import { UNBLOCK_USER } from '../../../utils/GraphQLRequests';
 import SnackbarContext from '../../../contexts/SnackbarContext';
+import { catchErrorOnMutation } from '../../../utils/CommonUtils';
 import { TOAST_SEVERITY_ERROR, TOAST_SEVERITY_SUCCESS } from '../../../utils/Constants';
 
 function UnblockUserButton({ username, tag, refetch }) {
